@@ -90,7 +90,7 @@ make macro-klayout
 
 In order to submit your design for integration into the HeiChips 2025 Tapeout, please open an issue at the following repository: https://github.com/FPGA-Research/heichips25-tapeout/issues
 
-**The Submission Deadline is one week after HeiChips**
+**The submission deadline is August 17, anywhere on earth.**
 
 The issue should contain the following information:
 
