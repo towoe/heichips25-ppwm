@@ -1,7 +1,7 @@
 # LibreLane configuration file
 
-DESIGN_NAME: tt_um_example
-VERILOG_FILES: dir::../src/tt_um_example.sv
+DESIGN_NAME: heichips25_template
+VERILOG_FILES: dir::../src/heichips25_template.sv
 CLOCK_PORT: clk
 CLOCK_PERIOD: 10 # 10ns = 100MHz
 
@@ -14,16 +14,16 @@ RIGHT_MARGIN_MULT: 6
 # Absolute die size
 FP_SIZING: absolute
 
-# Default size
-DIE_AREA: [0, 0, 202.08, 154.98]
-FP_DEF_TEMPLATE: dir::def/tt_block_1x1_pgvdd.def
+# Small DEF template
+DIE_AREA: [0, 0, 500, 200]
+FP_DEF_TEMPLATE: dir::def/heichips25_template_small.def
 
-# Default size
-DIE_AREA: [0, 0, 202.08, 313.74]
-FP_DEF_TEMPLATE: dir::def/tt_block_1x2_pgvdd.def
+# Large DEF template
+#DIE_AREA: [0, 0, 500, 415]
+#FP_DEF_TEMPLATE: dir::def/heichips25_template_large.def
 
-# Don't use power rings or TopMetal layers
-FP_PDN_MULTILAYER: false
+# Don't use power rings or TopMetal2 layer
+PDN_MULTILAYER: false
 RT_MAX_LAYER: TopMetal1
 
 # Enable for better SystemVerilog support

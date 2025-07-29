@@ -4,22 +4,60 @@ PDK_ROOT ?= ~/.ciel
 PDK ?= ihp-sg13g2
 
 RUN_TAG = $(shell ls librelane/runs/ -1 | tail -n 1)
-TOP = decoder
+
+# Macro - LibreLane
 
 macro:
-	cd librelane; PDK_ROOT=$(PDK_ROOT) PDK=$(PDK) librelane config.yaml --manual-pdk
-.phony: macro
+	cd librelane; librelane config.yaml --pdk $(PDK)
+.PHONY: macro
 
 macro-openroad:
-	cd librelane; PDK_ROOT=$(PDK_ROOT) PDK=$(PDK) librelane config.yaml --manual-pdk --last-run --flow OpenInOpenROAD
-.phony: macro
+	cd librelane; librelane config.yaml --pdk $(PDK) --last-run --flow OpenInOpenROAD
+.PHONY: macro
 
 macro-klayout:
-	cd librelane; PDK_ROOT=$(PDK_ROOT) PDK=$(PDK) librelane config.yaml --manual-pdk --last-run --flow OpenInKLayout
-.phony: macro
+	cd librelane; librelane config.yaml --pdk $(PDK) --last-run --flow OpenInKLayout
+.PHONY: macro
 
-copy-final:
-	mkdir -p final/
-	rm -rf final/*
-	cp -r librelane/runs/${RUN_TAG}/final/* final/
-.phony: copy-final
+copy-macro:
+	mkdir -p macro/
+	rm -rf macro/*
+	cp -r librelane/runs/${RUN_TAG}/final/* macro/
+.PHONY: copy-macro
+
+# Simulation & Verification
+
+sim:
+	cd tb; python3 testbench.py
+.PHONY: sim
+
+sim-gl:
+	cd tb; GL=1 python3 testbench.py
+.PHONY: sim-gl
+
+# FPGA
+
+synth-ulx3s: ulx3s.json
+
+build-ulx3s: ulx3s.bit
+
+upload-ulx3s: ulx3s.bit
+	openFPGALoader --board=ulx3s -f ulx3s.bit
+
+ulx3s.json: $(RTL) $(FPGA_ULX3S)
+	yosys -l $(basename $@)-yosys.log -DSYNTHESIS -DULX3S -DMODE_800x600 -p 'synth_ecp5 -top ulx3s_top -json $@' $(RTL) $(FPGA_ULX3S)
+
+ulx3s.config: ulx3s.json fpga/constraints/ulx3s_v20.lpf
+	nextpnr-ecp5 --85k --json $< \
+		--lpf fpga/constraints/ulx3s_v20.lpf \
+		--package CABGA381 \
+		--textcfg $@
+
+ulx3s.bit: ulx3s.config
+	ecppack $< $@ --compress
+
+clean:
+	rm -f *.vvp *.vcd
+	rm -f ulx3s.json ulx3s.config ulx3s.bit ulx3s-yosys.log
+
+.PHONY: clean sim-icarus sim-verilator sim-cocotb sprites

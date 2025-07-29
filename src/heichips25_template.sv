@@ -1,11 +1,11 @@
-/*
- * Copyright (c) 2025 Your Name
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-FileCopyrightText: © 2025 XXX Authors
+// SPDX-License-Identifier: Apache-2.0
+
+// Adapted from the Tiny Tapeout template
 
 `default_nettype none
 
-module tt_um_example (
+module heichips25_template (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -31,8 +31,8 @@ module tt_um_example (
         end
     end
     
-    assign uo_out   = count;
-    assign uio_out  = count;
-    assign uio_oe   = '1;
+    assign uo_out  = count;
+    assign uio_out = count;
+    assign uio_oe  = '1;
 
 endmodule

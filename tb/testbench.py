@@ -1,11 +1,12 @@
-# Copyright (c) 2025 Your Name
+# SPDX-FileCopyrightText: © 2025 XXX Authors
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import sys
 from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
-from cocotb_tools.runner import get_runner
+from cocotb.runner import get_runner
 from cocotb.triggers import Timer, ClockCycles
 
 
@@ -25,6 +26,7 @@ async def counter_test(dut):
     dut.rst_n.value = 0
     await Timer(100, 'ns')
     dut.rst_n.value = 1
+    await Timer(100, 'ns')
 
     # Ensure the otuput is 0x00
     assert dut.uo_out.value == 0, "Output is not 0!"
@@ -59,16 +61,21 @@ if __name__ == "__main__":
     sources = []#[testbench_path / 'testbench.sv']
     defines = {}
 
+    MACRO_NL = testbench_path / '../macro/nl/heichips25_template.nl.v'
+    
+    if not MACRO_NL.exists():
+        print(f"The macro netlist {MACRO_NL} does not exist. Did you implement the macro?")
+        sys.exit(0)
+
     if gl:
         sources.append(Path(pdk_root).expanduser() / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v" )
-        sources.append(Path(pdk_root).expanduser() / pdk / "libs.ref" / scl / "verilog" / "primitives.v" )
-        sources.append(testbench_path / '../final/nl/tt_um_example.nl.v')
+        sources.append(testbench_path / '../macro/nl/heichips25_template.nl.v')
         defines = {'FUNCTIONAL': True, 'UNIT_DELAY': '#0'}
     else:
         sources.extend(list(testbench_path.glob('../src/*')))
         defines = {'RTL': True}
 
-    hdl_toplevel = "tt_um_example"
+    hdl_toplevel = "heichips25_template"
 
     runner = get_runner(sim)
     runner.build(
@@ -77,7 +84,7 @@ if __name__ == "__main__":
         defines=defines,
         timescale=['1ns', '1ps'],
         waves=True,
-        build_args=['--trace', '--trace-fst', '--trace-structs'] if sim == 'verilator' else [],
+        build_args=['--trace', '--trace-fst', '--trace-structs'] if sim == 'verilator' else ['-gno-specify'],
     )
 
     runner.test(
