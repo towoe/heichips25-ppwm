@@ -13,11 +13,11 @@ macro:
 
 macro-openroad:
 	cd librelane; librelane config.yaml --pdk $(PDK) --last-run --flow OpenInOpenROAD
-.PHONY: macro
+.PHONY: macro-openroad
 
 macro-klayout:
 	cd librelane; librelane config.yaml --pdk $(PDK) --last-run --flow OpenInKLayout
-.PHONY: macro
+.PHONY: macro-klayout
 
 copy-macro:
 	mkdir -p macro/
