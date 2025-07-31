@@ -37,8 +37,7 @@
     );
     
     packages = nix-eda.forAllSystems (system: {
-      inherit (self.legacyPackages.${system}.python3.pkgs); #librelane-plugin-fabulous;
-      #default = self.packages.${system}.librelane-plugin-fabulous;
+      inherit (self.legacyPackages.${system}.python3.pkgs);
     });
     
     devShells = nix-eda.forAllSystems (system: let
@@ -55,15 +54,11 @@
           surfer
           
           # FPGA protoyping
-          #pkgs.yosys # already in LibreLane
+          #yosys # already in LibreLane
           nextpnr
           icestorm
           trellis
           openfpgaloader
-          
-          #clang
-          #zlib
-          #cmake
         ];
         
         extra-python-packages = with pkgs.python3.pkgs; [
