@@ -21,6 +21,9 @@ All submitted designs will be included on the chip (given the space), however, o
 
 ## Prerequisites
 
+> [!NOTE]
+> The HeiChips VM has Nix already pre-installed.
+
 If you haven't installed Nix yet, please do so using LibreLane's documentation: [Nix-based Installation](https://librelane.readthedocs.io/en/latest/getting_started/common/nix_installation/index.html). 
 
 Now you simply need to execute `nix-shell` at the root directory of this repository to enable all of the required tools. This has to be done each time you open a new shell.
@@ -62,9 +65,40 @@ gtkwave tb/sim_build/heichips25_template.fst
 
 Make sure to update the testbench for your design.
 
-## Emulation on an FPGA [WIP]
+## Emulation on FPGA
 
-TODO
+The following FPGA boards are supported by the Makefile:
+
+- [iCEBreaker](https://icebreaker-fpga.org/)
+- [ULX3S](https://radiona.org/ulx3s/)
+- [iCE40HX8K-EVB](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/)
+
+> [!IMPORTANT]  
+> You have to edit the top-level module under `fpga/<board_name>/<board_name>_top.sv` for your FPGA board so that it is compatible with your HeiChips design.
+
+The make targets for iCE40HX8K are:
+
+```
+make synth-ice40hx8k
+make pnr-ice40hx8k
+make upload-ice40hx8k
+```
+
+The make targets for iCEBreaker are:
+
+```
+make synth-icebreaker
+make pnr-icebreaker
+make upload-icebreaker
+```
+
+The make targets for ULX3S are:
+
+```
+make synth-ulx3s
+make pnr-ulx3s
+make upload-ulx3s
+```
 
 ## Physical Implementation using LibreLane
 
