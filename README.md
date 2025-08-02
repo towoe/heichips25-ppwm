@@ -72,6 +72,7 @@ The following FPGA boards are supported by the Makefile:
 - [iCEBreaker](https://icebreaker-fpga.org/)
 - [ULX3S](https://radiona.org/ulx3s/)
 - [iCE40HX8K-EVB](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/)
+- [Basys 3](https://digilent.com/reference/programmable-logic/basys-3/start)
 
 > [!IMPORTANT]  
 > You have to edit the top-level module under `fpga/<board_name>/<board_name>_top.sv` for your FPGA board so that it is compatible with your HeiChips design.
@@ -99,6 +100,19 @@ make synth-ulx3s
 make pnr-ulx3s
 make upload-ulx3s
 ```
+
+> [!IMPORTANT]  
+> Support for Basys 3 (Artix7) is not yet upstreamed in nextpnr. Thus we make use of the excellent [openXC7](https://github.com/openxc7) project, which provides a fork of nextpnr called `nextpnr-xilinx`.
+> However, this also means that the setup is slightly different. Instead of invoking `nix-shell` at the root of this repository, you need to invoke `nix-shell` inside of `nix-opencx7/`.
+
+The make targets for Basys 3 are:
+
+```
+make synth-basys3
+make pnr-basys3
+make upload-basys3
+```
+
 
 ## Physical Implementation using LibreLane
 

@@ -22,17 +22,12 @@
     nixpkgs = nix-eda.inputs.nixpkgs;
     lib = nixpkgs.lib;
   in {
-      overlays = {
-      default = lib.composeManyExtensions [
-        (import ./overlay.nix)
-      ];
-    };
     # Outputs
     legacyPackages = nix-eda.forAllSystems (
       system:
         import nixpkgs {
           inherit system;
-          overlays = [nix-eda.overlays.default devshell.overlays.default librelane.overlays.default self.overlays.default];
+          overlays = [nix-eda.overlays.default devshell.overlays.default librelane.overlays.default];
         }
     );
     
