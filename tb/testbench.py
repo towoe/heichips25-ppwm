@@ -62,14 +62,14 @@ if __name__ == "__main__":
     defines = {}
 
     MACRO_NL = testbench_path / '../macro/nl/heichips25_template.nl.v'
-    
-    if not MACRO_NL.exists():
-        print(f"The macro netlist {MACRO_NL} does not exist. Did you implement the macro?")
-        sys.exit(0)
 
     if gl:
+        if not MACRO_NL.exists():
+            print(f"The macro netlist {MACRO_NL} does not exist. Did you implement the macro?")
+            sys.exit(0)
+    
         sources.append(Path(pdk_root).expanduser() / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v" )
-        sources.append(testbench_path / '../macro/nl/heichips25_template.nl.v')
+        sources.append(MACRO_NL)
         defines = {'FUNCTIONAL': True, 'UNIT_DELAY': '#0'}
     else:
         sources.extend(list(testbench_path.glob('../src/*')))
