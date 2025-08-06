@@ -7,7 +7,7 @@ Please implement your group project based on this template and notify us once yo
 Your project will be connected to a small eFPGA along with all other user projects. This allows you to configure the eFPGA to route the I/Os of your project to the chip I/Os, implement additional logic in the eFPGA, connect several user projects together (ask what other teams are working on!), and make use of the SRAM.
 For more information, see the HeiChips 2025 Tapeout repository: https://github.com/FPGA-Research/heichips25-tapeout
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > You must rename the top-level of your design to make it unique. It must start with `heichips25_`, for example `heichips25_best_project_4ever`.
 > Make sure to update the top-level name throughout the repository.
 
@@ -47,6 +47,10 @@ To run the simulation testbench simply execute:
 make sim
 ```
 
+> [!IMPORTANT]
+> Before you start the gate-level simulation, you need to explicitly enable the PDK so that the testbench can find it.
+> Enable the latest version of the PDK using ciel: `ciel enable --pdk-family ihp-sg13g2 cb7daaa8901016cf7c5d272dfa322c41f024931f`
+
 Or for gate-level simulation:
 
 ```
@@ -74,7 +78,7 @@ The following FPGA boards are supported by the Makefile:
 - [iCE40HX8K-EVB](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/)
 - [Basys 3](https://digilent.com/reference/programmable-logic/basys-3/start)
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > You have to edit the top-level module under `fpga/<board_name>/<board_name>_top.sv` for your FPGA board so that it is compatible with your HeiChips design.
 
 The make targets for iCE40HX8K are:
@@ -101,7 +105,7 @@ make pnr-ulx3s
 make upload-ulx3s
 ```
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Support for Basys 3 (Artix7) is not yet upstreamed in nextpnr. Thus we make use of the excellent [openXC7](https://github.com/openxc7) project, which provides a fork of nextpnr called `nextpnr-xilinx`.
 > However, this also means that the setup is slightly different. Instead of invoking `nix-shell` at the root of this repository, you need to invoke `nix-shell` inside of `nix-opencx7/`.
 
@@ -147,7 +151,7 @@ The issue should contain the following information:
 - The group members
 - The link to your repository
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Your template repository needs to contain the final macro in the `macro/` folder.
 
 Checklist:

@@ -24,3 +24,8 @@ ulx3s.config
 ulx3s.bit
 ulx3s-yosys.log
 
+basys3.json
+basys3.fasm
+basys3.frames
+basys3.bit
+basys3-yosys.log
