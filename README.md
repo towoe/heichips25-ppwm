@@ -76,6 +76,7 @@ The following FPGA boards are supported by the Makefile:
 - [iCEBreaker](https://icebreaker-fpga.org/)
 - [ULX3S](https://radiona.org/ulx3s/)
 - [iCE40HX8K-EVB](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/)
+- [Tang Nano 9K](https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html)
 - [Basys 3](https://digilent.com/reference/programmable-logic/basys-3/start)
 
 > [!IMPORTANT]
@@ -95,6 +96,14 @@ The make targets for iCEBreaker are:
 make synth-icebreaker
 make pnr-icebreaker
 make upload-icebreaker
+```
+
+The make targets for Nano 9K are:
+
+```
+make synth-nano9k
+make pnr-nano9k
+make upload-nano9k
 ```
 
 The make targets for ULX3S are:
