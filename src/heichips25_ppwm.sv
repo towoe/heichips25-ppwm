@@ -19,20 +19,8 @@ module heichips25_ppwm (
     // List all unused inputs to prevent warnings
     wire _unused = &{ena, ui_in[7:1], uio_in[7:0]};
 
-    logic [7:0] count;
-
-    always_ff @(posedge clk) begin
-        if (!rst_n) begin
-            count <= '0;
-        end else begin
-            if (ui_in[0]) begin
-                count <= count + 1;
-            end
-        end
-    end
-    
-    assign uo_out  = count;
-    assign uio_out = count;
-    assign uio_oe  = '1;
+    assign uo_out  = '0;
+    assign uio_out = '0;
+    assign uio_oe  = '0;
 
 endmodule
