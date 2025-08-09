@@ -1,4 +1,4 @@
-# HeiChips 2025 Hackathon Template
+# HeiChips 2025 Programmable PWM
 
 This repository is the submission template for the HeiChips 2025 Hackathon.
 

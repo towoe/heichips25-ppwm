@@ -61,7 +61,7 @@ if __name__ == "__main__":
     sources = []#[testbench_path / 'testbench.sv']
     defines = {}
 
-    MACRO_NL = testbench_path / '../macro/nl/heichips25_template.nl.v'
+    MACRO_NL = testbench_path / '../macro/nl/heichips25_ppwm.nl.v'
 
     if gl:
         if not MACRO_NL.exists():
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         sources.extend(list(testbench_path.glob('../src/*')))
         defines = {'RTL': True}
 
-    hdl_toplevel = "heichips25_template"
+    hdl_toplevel = "heichips25_ppwm"
 
     runner = get_runner(sim)
     runner.build(
