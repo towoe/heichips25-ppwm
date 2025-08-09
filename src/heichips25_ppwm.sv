@@ -16,11 +16,25 @@ module heichips25_ppwm (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-    // List all unused inputs to prevent warnings
-    wire _unused = &{ena, ui_in[7:1], uio_in[7:0]};
+  // List all unused inputs to prevent warnings
+  wire _unused = &{ena, ui_in[7:1], uio_in[7:0]};
 
-    assign uo_out  = '0;
-    assign uio_out = '0;
-    assign uio_oe  = '0;
+  logic pwm;
+  logic period_start;
+
+  // PWM generation
+  pwm #(
+      .COUNTER_WIDTH(10)
+  ) u_pwm (
+      .clk(clk),
+      .rst_n(rst_n),
+      .cmp_value_i(10'h1ff),
+      .period_start_o(period_start),
+      .pwm_o(pwm)
+  );
+
+  assign uo_out  = {7'h00, pwm};
+  assign uio_out = '0;
+  assign uio_oe  = '0;
 
 endmodule
