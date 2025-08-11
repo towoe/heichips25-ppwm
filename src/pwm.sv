@@ -7,6 +7,7 @@ module pwm #(
     input logic clk,
     input logic rst_n,
     input logic [COUNTER_WIDTH-1:0] cmp_value_i,
+    input logic pwm_set_i,
     output logic period_start_o,
     output logic pwm_o
 );
@@ -24,7 +25,7 @@ module pwm #(
   end
 
   always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
+    if (!rst_n || pwm_set_i) begin
       counter <= {COUNTER_WIDTH{1'b0}};
       pwm_o   <= 1'b0;
     end else begin

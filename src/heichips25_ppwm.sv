@@ -20,7 +20,20 @@ module heichips25_ppwm (
   wire _unused = &{ena, ui_in[7:1], uio_in[7:0]};
 
   logic pwm;
+  logic pwm_start;
   logic period_start;
+
+  // Serial input of the PWM value
+  logic [9:0] pwm_value;
+  serial_in #(
+      .WIDTH(10)
+  ) u_serial_in (
+      .clk(clk),
+      .rst_n(rst_n),
+      .data_i(ui_in[0]),
+      .data_o(pwm_value),
+      .done_o(pwm_start)
+  );
 
   // PWM generation
   pwm #(
@@ -28,7 +41,8 @@ module heichips25_ppwm (
   ) u_pwm (
       .clk(clk),
       .rst_n(rst_n),
-      .cmp_value_i(10'h1FF),
+      .cmp_value_i(pwm_value),
+      .pwm_set_i(pwm_start),
       .period_start_o(period_start),
       .pwm_o(pwm)
   );

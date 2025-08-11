@@ -31,6 +31,20 @@ async def pwm_test(dut):
     # With 10-bit counter and cmp_value=512, PWM should be high for first 512 cycles
     # and low for remaining 512 cycles (50% duty cycle)
 
+    # Set a new compare value
+    pv = 511
+    # Send each bit on its own, preceeded with a high start bit
+    dut.ui_in[0].value = 1
+    await ClockCycles(dut.clk, 1)
+    for i in range(10):
+        dut.ui_in[0].value = (pv >> i) & 1
+        await ClockCycles(dut.clk, 1)
+    dut.ui_in[0].value = 0
+    # Check that the new value is there
+    await ClockCycles(dut.clk, 2)
+    assert dut.pwm_value == pv, "PWM vlaue should be 511"
+    await ClockCycles(dut.clk, 2)
+
     # Check PWM is low during first half of period (counter < 512)
     assert dut.uo_out[0].value[0] == 0, "PWM starts with a low value"
 
@@ -45,6 +59,21 @@ async def pwm_test(dut):
 
     # Should be high again at start of new period
     assert dut.uo_out[0].value[0] == 0, "PWM should be low again at start of new period!"
+
+    # Set a new compare value
+    pv = 64
+    # Send each bit on its own, preceeded with a high start bit
+    dut.ui_in[0].value = 1
+    await ClockCycles(dut.clk, 1)
+    for i in range(10):
+        dut.ui_in[0].value = (pv >> i) & 1
+        await ClockCycles(dut.clk, 1)
+    # Check that the new value is there
+    await ClockCycles(dut.clk, 1)
+    assert dut.pwm_value == 64, "PWM vlaue should be 64"
+
+    await ClockCycles(dut.clk, 10)
+
 
 
     # cocotb documentation: https://docs.cocotb.org/en/stable/refcard.html
@@ -72,6 +101,7 @@ if __name__ == "__main__":
         defines = {'FUNCTIONAL': True, 'UNIT_DELAY': '#0'}
     else:
         sources.append(testbench_path / '../src/pwm.sv')
+        sources.append(testbench_path / '../src/serial_in.sv')
         sources.append(testbench_path / '../src/heichips25_ppwm.sv')
         defines = {'RTL': True}
 
