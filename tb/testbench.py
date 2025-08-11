@@ -11,8 +11,8 @@ from cocotb.triggers import Timer, ClockCycles
 
 
 @cocotb.test()
-async def counter_test(dut):
-    """Testing the counter of the design."""
+async def pwm_test(dut):
+    """Testing the PWM output behavior."""
     
     # Create a clock with a period of 10ns = 100MHz
     clock = Clock(dut.clk, 10, 'ns')
@@ -28,30 +28,29 @@ async def counter_test(dut):
     dut.rst_n.value = 1
     await Timer(100, 'ns')
 
-    # Ensure the otuput is 0x00
-    assert dut.uo_out.value == 0, "Output is not 0!"
+    # With 10-bit counter and cmp_value=512, PWM should be high for first 512 cycles
+    # and low for remaining 512 cycles (50% duty cycle)
 
-    # Wait for 10 clock cycles
-    await ClockCycles(dut.clk, 10)
-    
-    # Ensure the otuput is still 0x00
-    assert dut.uo_out.value == 0, "Output is not 0!"
-    
-    # Enable the counter
-    dut.ui_in.value = 1
-    
-    # Wait for 10 clock cycles
-    await ClockCycles(dut.clk, 10)
-    
-    # Ensure the otuput is 10-1
-    assert dut.uo_out.value == 10-1, "Output is not 9!"
-    
+    # Check PWM is low during first half of period (counter < 512)
+    assert dut.uo_out[0].value[0] == 0, "PWM starts with a low value"
+
+    # Wait for half the period (512 cycles)
+    await ClockCycles(dut.clk, 512)
+
+    # Print the current clock cycle
+    assert dut.uo_out[0].value == 1, "PWM should be high during second half of period!"
+
+    # Wait for another half period to complete the cycle
+    await ClockCycles(dut.clk, 512)
+
+    # Should be high again at start of new period
+    assert dut.uo_out[0].value[0] == 0, "PWM should be low again at start of new period!"
+
+
     # cocotb documentation: https://docs.cocotb.org/en/stable/refcard.html
-    # cocotb reference card: https://docs.cocotb.org/en/stable/refcard.html
-
 if __name__ == "__main__":
 
-    sim         = os.getenv("SIM", "icarus")
+    sim         = os.getenv("SIM", "verilator")
     pdk_root    = os.getenv("PDK_ROOT", "~/.ciel")
     pdk         = os.getenv("PDK", "ihp-sg13g2")
     scl         = os.getenv("SCL", "sg13g2_stdcell")
@@ -72,7 +71,8 @@ if __name__ == "__main__":
         sources.append(MACRO_NL)
         defines = {'FUNCTIONAL': True, 'UNIT_DELAY': '#0'}
     else:
-        sources.extend(list(testbench_path.glob('../src/*')))
+        sources.append(testbench_path / '../src/pwm.sv')
+        sources.append(testbench_path / '../src/heichips25_ppwm.sv')
         defines = {'RTL': True}
 
     hdl_toplevel = "heichips25_ppwm"

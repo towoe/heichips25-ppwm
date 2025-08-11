@@ -28,7 +28,7 @@ module heichips25_ppwm (
   ) u_pwm (
       .clk(clk),
       .rst_n(rst_n),
-      .cmp_value_i(10'h1ff),
+      .cmp_value_i(10'h1FF),
       .period_start_o(period_start),
       .pwm_o(pwm)
   );

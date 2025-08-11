@@ -11,13 +11,22 @@ module pwm #(
     output logic pwm_o
 );
   logic [COUNTER_WIDTH-1:0] counter;
+  logic period_start;
 
-  assign period_start_o = (counter == {COUNTER_WIDTH{1'b0}});
+  assign period_start_o = period_start;
+
+  always_ff @(posedge clk or negedge rst_n) begin : start_signal
+    if (!rst_n) begin
+      period_start <= 1'b0;
+    end else begin
+      period_start <= (counter == {COUNTER_WIDTH{1'b0}});
+    end
+  end
 
   always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       counter <= {COUNTER_WIDTH{1'b0}};
-      pwm_o <= 1'b0;
+      pwm_o   <= 1'b0;
     end else begin
       counter <= counter + 1;
       if (counter < cmp_value_i) begin
