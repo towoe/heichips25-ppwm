@@ -20,7 +20,7 @@ module serial_in #(
   logic [$clog2(WIDTH)-1:0] bit_count;
 
   // State register
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       state <= IDLE;
     end else begin
@@ -29,7 +29,7 @@ module serial_in #(
   end
 
   // Counter and shift register
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       shift_reg <= '0;
       bit_count <= '0;

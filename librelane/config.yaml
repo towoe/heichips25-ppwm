@@ -1,7 +1,11 @@
 # LibreLane configuration file
 
 DESIGN_NAME: heichips25_ppwm
-VERILOG_FILES: dir::../src/heichips25_ppwm.sv
+VERILOG_FILES: [
+  "dir::../src/heichips25_ppwm.sv",
+  "dir::../src/pwm.sv",
+  "dir::../src/serial_in.sv",
+]
 CLOCK_PORT: clk
 CLOCK_PERIOD: 10 # 10ns = 100MHz
 

@@ -16,7 +16,7 @@ module pwm #(
 
   assign period_start_o = period_start;
 
-  always_ff @(posedge clk or negedge rst_n) begin : start_signal
+  always_ff @(posedge clk) begin : start_signal
     if (!rst_n) begin
       period_start <= 1'b0;
     end else begin
@@ -24,7 +24,7 @@ module pwm #(
     end
   end
 
-  always @(posedge clk or negedge rst_n) begin
+  always @(posedge clk) begin
     if (!rst_n || pwm_set_i) begin
       counter <= {COUNTER_WIDTH{1'b0}};
       pwm_o   <= 1'b0;
