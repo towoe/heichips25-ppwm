@@ -18,22 +18,23 @@ module ex #(
   import ppwm_pkg::*;
 
   typedef enum logic [1:0] {
-    STATE_IDLE = 2'b00,  // Idle state
-    STATE_EXEC = 2'b01   // Executing instruction
+    StIdle = 2'b00,  // Idle state
+    StExec = 2'b01,  // Executing instruction
+    StWait = 2'b10   // Wait for new start without resetting the program counter
   } state_e;
-  state_e current_state, next_state;
+  state_e state_q, state_d;
 
   // Program counter
   logic [PC_WIDTH-1:0] pc_d, pc_q;
   // Compare flag, set if global counter is smaller
   logic cmp_flag_d, cmp_flag_q;
 
-  command_e command;
-  target_e target;
-  logic [1:0] immediate;
-  assign command = command_e'(instr_i[2:0]);
-  assign target = target_e'(instr_i[3]);
-  assign immediate = instr_i[5:4];
+  command_e instr_cmd;
+  target_e instr_trgt;
+  logic [1:0] instr_imm;
+  assign instr_cmd = command_e'(instr_i[2:0]);
+  assign instr_trgt = target_e'(instr_i[3]);
+  assign instr_imm = instr_i[5:4];
 
   // PWM value and register storage
   logic [COUNTER_WIDTH-1:0] pwm_value_d, pwm_value_q;
@@ -41,7 +42,7 @@ module ex #(
 
   // Execution control
   always_comb begin
-    next_state = current_state;
+    state_d = state_q;
     pc_d = pc_q;
     cmp_flag_d = cmp_flag_q;
 
@@ -49,47 +50,47 @@ module ex #(
     pwm_value_d = pwm_value_q;
     reg_value_d = reg_value_q;
 
-    case (current_state)
-      STATE_IDLE: begin
+    case (state_q)
+      StIdle: begin
         if (start_i) begin
-          next_state = STATE_EXEC;
+          state_d = StExec;
         end
       end
-      STATE_EXEC: begin
-        // Last instruction will end exectuion
-        // Can be continued by jumping to the first instruction explicitally
+      StExec: begin
+        // Last instruction will end execution
+        // Can be continued by jumping to the first instruction explicitly
         if (pc_q == '1) begin
-          next_state = STATE_IDLE;
+          state_d = StIdle;
         end
         pc_d = pc_q + 1;
 
-        case (command)
+        case (instr_cmd)
           CMD_NOP: begin
             // No operation, just continue
           end
           CMD_SET: begin
-            if (target == TRGT_REG) begin
-              reg_value_d = {8'b0, immediate};
-            end else if (target == TRGT_PWM) begin
-              pwm_value_d = {8'b0, immediate};
+            if (instr_trgt == TRGT_REG) begin
+              reg_value_d = {8'b0, instr_imm};
+            end else if (instr_trgt == TRGT_PWM) begin
+              pwm_value_d = {8'b0, instr_imm};
             end
           end
           CMD_ARITH: begin
-            if (target == TRGT_REG) begin
-              reg_value_d = reg_value_q + {8'b0, immediate};
-            end else if (target == TRGT_PWM) begin
-              pwm_value_d = pwm_value_q + {8'b0, immediate};
+            if (instr_trgt == TRGT_REG) begin
+              reg_value_d = reg_value_q + {8'b0, instr_imm};
+            end else if (instr_trgt == TRGT_PWM) begin
+              pwm_value_d = pwm_value_q + {8'b0, instr_imm};
             end
           end
           CMD_SHIFT: begin
-            if (target == TRGT_REG) begin
-              if (immediate[0]) begin
+            if (instr_trgt == TRGT_REG) begin
+              if (instr_imm[0]) begin
                 reg_value_d = {reg_value_q[COUNTER_WIDTH-2:0], 1'b0};  // Shift left
               end else begin
                 reg_value_d = {1'b0, reg_value_q[COUNTER_WIDTH-1:1]};  // Shift right
               end
-            end else if (target == TRGT_PWM) begin
-              if (immediate[0]) begin
+            end else if (instr_trgt == TRGT_PWM) begin
+              if (instr_imm[0]) begin
                 pwm_value_d = {pwm_value_q[COUNTER_WIDTH-2:0], 1'b0};  // Shift left
               end else begin
                 pwm_value_d = {1'b0, pwm_value_q[COUNTER_WIDTH-1:1]};  // Shift right
@@ -97,18 +98,18 @@ module ex #(
             end
           end
           CMD_WAIT: begin
-            next_state = STATE_IDLE;
+            state_d = StWait;
           end
           CMD_JUMP: begin
-            pc_d = pc_q + {{(PC_WIDTH-3){instr_i[5]}}, instr_i[5:3]};
+            pc_d = pc_q + {{(PC_WIDTH - 3) {instr_i[5]}}, instr_i[5:3]};
           end
           CMD_CMP_CNTR: begin
             // Compare global counter with register or PWM value
-            if (target == TRGT_REG) begin
+            if (instr_trgt == TRGT_REG) begin
               if (global_counter_i < reg_value_q) begin
                 cmp_flag_d = 1'b1;
               end
-            end else if (target == TRGT_PWM) begin
+            end else if (instr_trgt == TRGT_PWM) begin
               if (global_counter_i < pwm_value_q) begin
                 cmp_flag_d = 1'b1;
               end
@@ -123,10 +124,15 @@ module ex #(
           default: begin
           end
         endcase
-
+      end
+      StWait: begin
+        // Wait for a new start signal without resetting the program counter
+        if (start_i) begin
+          state_d = StExec;
+        end
       end
       default: begin
-        next_state = STATE_IDLE;
+        state_d = StIdle;
       end
     endcase
   end
@@ -134,13 +140,13 @@ module ex #(
   // State transition logic
   always_ff @(posedge clk) begin
     if (!rst_n) begin
-      current_state <= STATE_IDLE;
+      state_q <= StIdle;
       pc_q <= '0;
       cmp_flag_q <= 1'b0;
       pwm_value_q <= '0;
       reg_value_q <= '0;
     end else begin
-      current_state <= next_state;
+      state_q <= state_d;
       pc_q <= pc_d;
       cmp_flag_q <= cmp_flag_d;
       pwm_value_q <= pwm_value_d;
