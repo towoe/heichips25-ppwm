@@ -105,6 +105,7 @@ if __name__ == "__main__":
         defines = {'FUNCTIONAL': True, 'UNIT_DELAY': '#0'}
     else:
         sources.append(testbench_path / '../src/ppwm.sv')
+        sources.append(testbench_path / '../src/counter.sv')
         sources.append(testbench_path / '../src/mem.sv')
         sources.append(testbench_path / '../src/pwm.sv')
         sources.append(testbench_path / '../src/serial_in.sv')

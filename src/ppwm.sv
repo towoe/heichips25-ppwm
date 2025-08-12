@@ -27,6 +27,19 @@ module ppwm #(
       .pwm_o(data_o)
   );
 
+  logic [9:0] global_counter_high;
+
+  // Global counter for user functions
+  counter #(
+      .WIDTH(20),
+      .HIGH_WIDTH(10)
+  ) u_global_counter (
+      .clk(clk),
+      .rst_n(rst_n),
+      .tick_i(period_start),
+      .high_value_o(global_counter_high)
+  );
+
   // Instruction memory
   // Serial line for programming, high start bit
   mem #(
