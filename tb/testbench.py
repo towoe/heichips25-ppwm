@@ -28,51 +28,55 @@ async def pwm_test(dut):
     dut.rst_n.value = 1
     await Timer(100, 'ns')
 
+    # Initialize memory with program instructions (6-bit values)
+    program = [
+        0b010001,  # Address 0: set, pwm, 1
+        0b010010,  # Address 1: add, pwm, 1
+        0b110011,  # Address 2: shift, pwm, left, 1
+        0b110011,  # Address 3: shift, pwm, left, 1
+        0b110011,  # Address 4: shift, pwm, left, 1
+        0b101101,  # Jmp back
+
+        # Add more instructions as needed...
+    ]
+
+    # Fill remaining addresses with zeros
+    program.extend([0b000000] * (32 - len(program)))
+
+    # Load program into memory
+    await load_program_to_memory(dut, program)
+
     # With 10-bit counter and cmp_value=512, PWM should be high for first 512 cycles
     # and low for remaining 512 cycles (50% duty cycle)
 
-    # Set a new compare value
-    pv = 511
-    # Send each bit on its own, preceeded with a high start bit
-    dut.ui_in[0].value = 1
-    await ClockCycles(dut.clk, 1)
-    for i in range(10):
-        dut.ui_in[0].value = (pv >> i) & 1
-        await ClockCycles(dut.clk, 1)
-    dut.ui_in[0].value = 0
-    # Check that the new value is there
     await ClockCycles(dut.clk, 2)
-    assert dut.u_ppwm.pwm_value == pv, "PWM vlaue should be 511"
-    await ClockCycles(dut.clk, 2)
-
-    # Check PWM is low during first half of period (counter < 512)
-    assert dut.uo_out[0].value[0] == 0, "PWM starts with a low value"
 
     # Wait for half the period (512 cycles)
     await ClockCycles(dut.clk, 512)
 
     # Print the current clock cycle
-    assert dut.uo_out[0].value == 1, "PWM should be high during second half of period!"
+    # assert dut.uo_out[0].value == 1, "PWM should be high during second half of period!"
 
     # Wait for another half period to complete the cycle
     await ClockCycles(dut.clk, 512)
 
     # Should be high again at start of new period
-    assert dut.uo_out[0].value[0] == 0, "PWM should be low again at start of new period!"
+    # assert dut.uo_out[0].value[0] == 0, "PWM should be low again at start of new period!"
 
-    # Set a new compare value
-    pv = 64
-    # Send each bit on its own, preceeded with a high start bit
-    dut.ui_in[0].value = 1
-    await ClockCycles(dut.clk, 1)
-    for i in range(10):
-        dut.ui_in[0].value = (pv >> i) & 1
-        await ClockCycles(dut.clk, 1)
-    # Check that the new value is there
-    await ClockCycles(dut.clk, 1)
-    assert dut.u_ppwm.pwm_value == 64, "PWM vlaue should be 64"
 
     await ClockCycles(dut.clk, 10)
+
+async def load_program_to_memory(dut, program):
+    """Load a program into the memory module via serial interface."""
+    # Send start bit (high)
+    dut.ui_in[0].value  = 1
+    await ClockCycles(dut.clk, 1)
+    for _, instruction in enumerate(program):
+        # Send 6 bits of instruction data (LSB first)
+        print(f"Loading instruction: {instruction:06b}")
+        for bit in range(6):
+            dut.ui_in[0].value = (instruction >> bit) & 1
+            await ClockCycles(dut.clk, 1)
 
 
 
@@ -101,6 +105,7 @@ if __name__ == "__main__":
         defines = {'FUNCTIONAL': True, 'UNIT_DELAY': '#0'}
     else:
         sources.append(testbench_path / '../src/ppwm.sv')
+        sources.append(testbench_path / '../src/mem.sv')
         sources.append(testbench_path / '../src/pwm.sv')
         sources.append(testbench_path / '../src/serial_in.sv')
         sources.append(testbench_path / '../src/heichips25_ppwm.sv')

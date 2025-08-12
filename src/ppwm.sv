@@ -10,20 +10,10 @@ module ppwm #(
     output logic data_o
 );
 
-  logic pwm_start;
+  logic mem_write_done;
   logic period_start;
 
-  // Serial input of the PWM value
   logic [9:0] pwm_value;
-  serial_in #(
-      .WIDTH(10)
-  ) u_serial_in (
-      .clk(clk),
-      .rst_n(rst_n),
-      .data_i(data_i),
-      .data_o(pwm_value),
-      .done_o(pwm_start)
-  );
 
   // PWM generation
   pwm #(
@@ -32,9 +22,23 @@ module ppwm #(
       .clk(clk),
       .rst_n(rst_n),
       .cmp_value_i(pwm_value),
-      .pwm_set_i(pwm_start),
+      .pwm_set_i(mem_write_done),
       .period_start_o(period_start),
       .pwm_o(data_o)
+  );
+
+  // Instruction memory
+  // Serial line for programming, high start bit
+  mem #(
+      .WIDTH(6),
+      .DEPTH(32)
+  ) u_mem (
+      .clk(clk),
+      .rst_n(rst_n),
+      .data_i(data_i),
+      .addr_i(pc),
+      .programmed_o(mem_write_done),
+      .data_o(instr)
   );
 
 endmodule
