@@ -35,7 +35,7 @@ async def pwm_test(dut):
         0b010010,  # add, pwm, 1
         0b010010,  # add, pwm, 1
         0b101100,  # wai
-        0b100101,  # jmp
+        0b101101,  # jmp
         # Add more instructions as needed...
     ]
 
