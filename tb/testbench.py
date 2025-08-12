@@ -32,9 +32,9 @@ async def pwm_test(dut):
     program = [
         0b010001,  # Address 0: set, pwm, 1
         0b010010,  # Address 1: add, pwm, 1
-        0b110011,  # Address 2: shift, pwm, left, 1
-        0b110011,  # Address 3: shift, pwm, left, 1
-        0b110011,  # Address 4: shift, pwm, left, 1
+        0b010010,  # Address 2: shift, pwm, left, 1
+        0b010010,  # Address 3: shift, pwm, left, 1
+        0b010010,  # Address 4: shift, pwm, left, 1
         0b101101,  # Jmp back
 
         # Add more instructions as needed...
@@ -58,7 +58,7 @@ async def pwm_test(dut):
     # assert dut.uo_out[0].value == 1, "PWM should be high during second half of period!"
 
     # Wait for another half period to complete the cycle
-    await ClockCycles(dut.clk, 512)
+    await ClockCycles(dut.clk, 2048)
 
     # Should be high again at start of new period
     # assert dut.uo_out[0].value[0] == 0, "PWM should be low again at start of new period!"
