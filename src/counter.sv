@@ -21,4 +21,6 @@ module counter #(
     end
   end
 
+  assign high_value_o = counter[WIDTH-1:WIDTH-HIGH_WIDTH];
+
 endmodule
