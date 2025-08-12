@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module ppwm #(
-    parameter int COUNTER_WIDTH = 8
+    parameter int COUNTER_WIDTH = 8,
+    parameter int INSTR_WIDTH = 6,
+    parameter int PC_WIDTH = 4
 ) (
     input  logic clk,
     input  logic rst_n,
@@ -13,11 +15,11 @@ module ppwm #(
   logic mem_write_done;
   logic period_start;
 
-  logic [9:0] pwm_value;
+  logic [COUNTER_WIDTH-1:0] pwm_value;
 
   // PWM generation
   pwm #(
-      .COUNTER_WIDTH(10)
+      .COUNTER_WIDTH(COUNTER_WIDTH)
   ) u_pwm (
       .clk(clk),
       .rst_n(rst_n),
@@ -27,12 +29,12 @@ module ppwm #(
       .pwm_o(data_o)
   );
 
-  logic [9:0] global_counter_high;
+  logic [COUNTER_WIDTH-1:0] global_counter_high;
 
   // Global counter for user functions
   counter #(
       .WIDTH(20),
-      .HIGH_WIDTH(10)
+      .HIGH_WIDTH(COUNTER_WIDTH)
   ) u_global_counter (
       .clk(clk),
       .rst_n(rst_n),
@@ -40,17 +42,17 @@ module ppwm #(
       .high_value_o(global_counter_high)
   );
 
-  logic [4:0] pc;
-  logic [5:0] instr;
+  logic [PC_WIDTH-1:0] pc;
+  logic [INSTR_WIDTH-1:0] instr;
   // Instruction execution to calculate the PWM value for each period
   ex #(
-      .COUNTER_WIDTH(10),
-      .INSTR_WIDTH(6),
-      .PC_WIDTH(5)
+      .COUNTER_WIDTH(COUNTER_WIDTH),
+      .INSTR_WIDTH(INSTR_WIDTH),
+      .PC_WIDTH(PC_WIDTH)
   ) u_ex (
       .clk(clk),
       .rst_n(rst_n),
-      .start_i(mem_write_done),
+      .start_i(period_start),
       .global_counter_i(global_counter_high),
       .instr_i(instr),
       .pc_o(pc),
@@ -60,8 +62,8 @@ module ppwm #(
   // Instruction memory
   // Serial line for programming, high start bit
   mem #(
-      .WIDTH(6),
-      .DEPTH(32)
+      .WIDTH(INSTR_WIDTH),
+      .DEPTH(PC_WIDTH**2)
   ) u_mem (
       .clk(clk),
       .rst_n(rst_n),
