@@ -3,8 +3,12 @@
 DESIGN_NAME: heichips25_ppwm
 VERILOG_FILES: [
   "dir::../src/heichips25_ppwm.sv",
+  "dir::../src/ppwm_pkg.sv",
+  "dir::../src/ppwm.sv",
+  "dir::../src/counter.sv",
   "dir::../src/pwm.sv",
-  "dir::../src/serial_in.sv",
+  "dir::../src/ex.sv",
+  "dir::../src/mem.sv",
 ]
 CLOCK_PORT: clk
 CLOCK_PERIOD: 10 # 10ns = 100MHz
@@ -31,4 +35,4 @@ PDN_MULTILAYER: false
 RT_MAX_LAYER: TopMetal1
 
 # Enable for better SystemVerilog support
-#USE_SLANG: true
+USE_SLANG: true
