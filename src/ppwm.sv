@@ -40,6 +40,23 @@ module ppwm #(
       .high_value_o(global_counter_high)
   );
 
+  logic [4:0] pc;
+  logic [5:0] instr;
+  // Instruction execution to calculate the PWM value for each period
+  ex #(
+      .COUNTER_WIDTH(10),
+      .INSTR_WIDTH(6),
+      .PC_WIDTH(5)
+  ) u_ex (
+      .clk(clk),
+      .rst_n(rst_n),
+      .start_i(mem_write_done),
+      .global_counter_i(global_counter_high),
+      .instr_i(instr),
+      .pc_o(pc),
+      .pwm_value_o(pwm_value)
+  );
+
   // Instruction memory
   // Serial line for programming, high start bit
   mem #(
