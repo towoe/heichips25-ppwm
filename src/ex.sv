@@ -36,6 +36,7 @@ module ex #(
 
   command_e instr_cmd;
   target_e instr_trgt;
+  cmp_args_e instr_cmp_args;
   logic [ImmWidth-1:0] instr_imm;
   logic [COUNTER_WIDTH-1:0] instr_imm_sig_ext;
   logic [CtrlTransWidth-1:0] instr_ctrl_offset;
@@ -50,6 +51,7 @@ module ex #(
   // FSM control:     [xxxx_CCC]
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[TargetPos-1]);
+  assign instr_cmp_args = cmp_args_e'(instr_i[OpcodeWidth+1:OpcodeWidth]);
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
   assign instr_imm_sig_ext = {{CntPadWidth{instr_imm[ImmWidth-1]}}, instr_imm};
   assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
@@ -131,18 +133,28 @@ module ex #(
           CMD_JUMP: begin
             pc_d = pc_q + instr_ctrl_offset;
           end
-          CMD_CMP_CNTR: begin
-            // Compare global counter with register or PWM value
+          CMD_CMP: begin
+            // Compare operation
             cmp_flag_d = 1'b0;
-            if (instr_trgt == TRGT_REG) begin
-              if (global_counter_i < reg_value_q) begin
-                cmp_flag_d = 1'b1;
+            case (instr_cmp_args)
+              CMP_GCNT_PWM: begin
+                if (global_counter_i < pwm_value_q) begin
+                  cmp_flag_d = 1'b1;
+                end
               end
-            end else if (instr_trgt == TRGT_PWM) begin
-              if (global_counter_i < pwm_value_q) begin
-                cmp_flag_d = 1'b1;
+              CMP_GCNT_REG: begin
+                if (global_counter_i < reg_value_q) begin
+                  cmp_flag_d = 1'b1;
+                end
               end
-            end
+              CMP_PWM_REG: begin
+                if (pwm_value_q < reg_value_q) begin
+                  cmp_flag_d = 1'b1;
+                end
+              end
+              default: begin
+              end
+            endcase
           end
           CMD_BRANCH: begin
             // Branch if condition is met
