@@ -78,6 +78,18 @@ value receive by the execution unit, the output line is low.
 0b1011_101   # jump -5
 ```
 
+## Open questions
+
+__Frequency__
+The PWM output is directly tied to the clock frequency of the design.
+The input frequency will also affect the scale of the global counter.
+
+__Instruction memory__
+The current implementation requires a clock synchron programming of the memory.
+Also, the memory take a major area in the design.
+Depending on the overall system, changes here might be sensible.
+It would be within the program execution if the instruction fetch takes more
+than one cycle.
 
 ## License
 
