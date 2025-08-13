@@ -78,6 +78,13 @@ value receive by the execution unit, the output line is low.
 0b1011_101   # jump -5
 ```
 
+## Physical results
+
+__Area__
+OpenROAD reports an area usage of 20611 um². Memory uses 11500 um² alone.
+
+![OpenROAD area usage](images/chip_usage.png)
+
 ## Open questions
 
 __Frequency__
