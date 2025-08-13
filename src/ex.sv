@@ -18,6 +18,7 @@ module ex #(
   import ppwm_pkg::*;
   localparam int OpcodeWidth = 3;
   localparam int ImmWidth = 2;
+  localparam int CtrlTransWidth = 3;
 
   typedef enum logic [1:0] {
     StIdle = 2'b00,  // Idle state
@@ -34,9 +35,14 @@ module ex #(
   command_e instr_cmd;
   target_e instr_trgt;
   logic [ImmWidth-1:0] instr_imm;
-  assign instr_cmd  = command_e'(instr_i[OpcodeWidth-1:0]);
+  logic [CtrlTransWidth-1:0] instr_ctrl_offset;
+
+  assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[OpcodeWidth]);
-  assign instr_imm  = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
+  assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
+  assign instr_ctrl_offset = {
+    {(PC_WIDTH - OpcodeWidth) {instr_i[INSTR_WIDTH-1]}}, instr_i[INSTR_WIDTH-1:OpcodeWidth]
+  };
 
   // PWM value and register storage
   logic [COUNTER_WIDTH-1:0] pwm_value_d, pwm_value_q;
@@ -103,8 +109,7 @@ module ex #(
             state_d = StWait;
           end
           CMD_JUMP: begin
-            pc_d = pc_q + {{(PC_WIDTH - OpcodeWidth) {instr_i[INSTR_WIDTH-1]}},
-              instr_i[INSTR_WIDTH-1:OpcodeWidth]};
+            pc_d = pc_q + instr_ctrl_offset;
           end
           CMD_CMP_CNTR: begin
             // Compare global counter with register or PWM value
@@ -121,7 +126,7 @@ module ex #(
           CMD_BRANCH: begin
             // Branch if condition is met
             if (cmp_flag_q) begin
-              pc_d = pc_q + {1'b0, instr_i[INSTR_WIDTH-1:OpcodeWidth]};
+              pc_d = pc_q + instr_ctrl_offset;
             end
           end
           default: begin
