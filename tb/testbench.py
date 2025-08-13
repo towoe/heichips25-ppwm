@@ -35,18 +35,18 @@ async def pwm_test(dut):
         0b0100010,  # add, pwm, 1
         0b0100010,  # add, pwm, 1
         0b0100010,  # add, pwm, 1
-        0b0101100,  # wai
+        0b0001000,  # ctrl wait
         0b1000101,  # jmp
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
-        0b0000000,  # nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
+        0b0000000,  # ctrl nop
     ]
 
     # Load program into memory

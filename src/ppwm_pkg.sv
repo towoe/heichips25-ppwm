@@ -4,11 +4,11 @@
 package ppwm_pkg;
 
   typedef enum logic [2:0] {
-    CMD_NOP      = 3'b000,  // No operation
+    CMD_CTRL     = 3'b000,  // FSM control
     CMD_SET      = 3'b001,  // Set starting value
     CMD_ARITH    = 3'b010,  // Arithmetic (signed immediate for add and sub)
     CMD_SHIFT    = 3'b011,  // Shift (function for direction)
-    CMD_WAIT     = 3'b100,  // Wait for next PWM period
+    CMD_RSRV     = 3'b100,  // Future use
     CMD_JUMP     = 3'b101,  // Jump, signed offset
     CMD_CMP_CNTR = 3'b110,  // Compare global counter
     CMD_BRANCH   = 3'b111   // Branch if condition is met

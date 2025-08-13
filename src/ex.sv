@@ -17,8 +17,10 @@ module ex #(
 
   import ppwm_pkg::*;
   localparam int OpcodeWidth = 3;
-  localparam int ImmWidth = 2;
+  localparam int ImmWidth = 3;
   localparam int CtrlTransWidth = 4;
+  localparam int TargetPos = OpcodeWidth + 1;
+  localparam int CntPadWidth = COUNTER_WIDTH - ImmWidth;
 
   typedef enum logic [1:0] {
     StIdle = 2'b00,  // Idle state
@@ -37,8 +39,16 @@ module ex #(
   logic [ImmWidth-1:0] instr_imm;
   logic [CtrlTransWidth-1:0] instr_ctrl_offset;
 
+  // Instruction pattern
+  // I: immediate
+  // T: target (register or PWM)
+  // C: command code
+  // O: offset for jump or branch
+  // Register access: [III_T_CCC]
+  // Control flow:    [OOOO_CCC]
+  // FSM control:     [xxxx_CCC]
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
-  assign instr_trgt = target_e'(instr_i[OpcodeWidth]);
+  assign instr_trgt = target_e'(instr_i[TargetPos-1]);
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
   assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
 
@@ -71,21 +81,34 @@ module ex #(
         pc_d = pc_q + 1;
 
         case (instr_cmd)
-          CMD_NOP: begin
-            // No operation, just continue
+          CMD_CTRL: begin
+            // FSM control commands
+            // Uses a bit pattern to change behaviour
+            case (instr_i[INSTR_WIDTH-1:OpcodeWidth])
+              4'b0000: begin
+                // NOP
+              end
+              4'b0001: begin
+                // Wait for a new start signal
+                state_d = StWait;
+              end
+              default: begin
+                // Unrecognized control command, do nothing
+              end
+            endcase
           end
           CMD_SET: begin
             if (instr_trgt == TRGT_REG) begin
-              reg_value_d = {8'b0, instr_imm};
+              reg_value_d = {{CntPadWidth{1'b0}}, instr_imm};
             end else if (instr_trgt == TRGT_PWM) begin
-              pwm_value_d = {8'b0, instr_imm};
+              pwm_value_d = {{CntPadWidth{1'b0}}, instr_imm};
             end
           end
           CMD_ARITH: begin
             if (instr_trgt == TRGT_REG) begin
-              reg_value_d = reg_value_q + {8'b0, instr_imm};
+              reg_value_d = reg_value_q + {{CntPadWidth{1'b0}}, instr_imm};
             end else if (instr_trgt == TRGT_PWM) begin
-              pwm_value_d = pwm_value_q + {8'b0, instr_imm};
+              pwm_value_d = pwm_value_q + {{CntPadWidth{1'b0}}, instr_imm};
             end
           end
           CMD_SHIFT: begin
@@ -102,9 +125,6 @@ module ex #(
                 pwm_value_d = {1'b0, pwm_value_q[COUNTER_WIDTH-1:1]};  // Shift right
               end
             end
-          end
-          CMD_WAIT: begin
-            state_d = StWait;
           end
           CMD_JUMP: begin
             pc_d = pc_q + instr_ctrl_offset;
