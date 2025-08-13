@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module pwm #(
-    parameter int COUNTER_WIDTH = 8
+    parameter int COUNTER_WIDTH = 10
 ) (
     input  logic                     clk,
     input  logic                     rst_n,
