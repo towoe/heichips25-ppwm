@@ -16,6 +16,8 @@ module ex #(
 );
 
   import ppwm_pkg::*;
+  localparam int OpcodeWidth = 3;
+  localparam int ImmWidth = 2;
 
   typedef enum logic [1:0] {
     StIdle = 2'b00,  // Idle state
@@ -31,10 +33,10 @@ module ex #(
 
   command_e instr_cmd;
   target_e instr_trgt;
-  logic [1:0] instr_imm;
-  assign instr_cmd = command_e'(instr_i[2:0]);
-  assign instr_trgt = target_e'(instr_i[3]);
-  assign instr_imm = instr_i[5:4];
+  logic [ImmWidth-1:0] instr_imm;
+  assign instr_cmd  = command_e'(instr_i[OpcodeWidth-1:0]);
+  assign instr_trgt = target_e'(instr_i[OpcodeWidth]);
+  assign instr_imm  = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
 
   // PWM value and register storage
   logic [COUNTER_WIDTH-1:0] pwm_value_d, pwm_value_q;
@@ -101,7 +103,8 @@ module ex #(
             state_d = StWait;
           end
           CMD_JUMP: begin
-            pc_d = pc_q + {{(PC_WIDTH - 3) {instr_i[5]}}, instr_i[5:3]};
+            pc_d = pc_q + {{(PC_WIDTH - OpcodeWidth) {instr_i[INSTR_WIDTH-1]}},
+              instr_i[INSTR_WIDTH-1:OpcodeWidth]};
           end
           CMD_CMP_CNTR: begin
             // Compare global counter with register or PWM value
@@ -118,7 +121,7 @@ module ex #(
           CMD_BRANCH: begin
             // Branch if condition is met
             if (cmp_flag_q) begin
-              pc_d = pc_q + {1'b0, instr_i[5:3]};
+              pc_d = pc_q + {1'b0, instr_i[INSTR_WIDTH-1:OpcodeWidth]};
             end
           end
           default: begin
@@ -140,15 +143,15 @@ module ex #(
   // State transition logic
   always_ff @(posedge clk) begin
     if (!rst_n) begin
-      state_q <= StIdle;
-      pc_q <= '0;
-      cmp_flag_q <= 1'b0;
+      state_q     <= StIdle;
+      pc_q        <= '0;
+      cmp_flag_q  <= 1'b0;
       pwm_value_q <= '0;
       reg_value_q <= '0;
     end else begin
-      state_q <= state_d;
-      pc_q <= pc_d;
-      cmp_flag_q <= cmp_flag_d;
+      state_q     <= state_d;
+      pc_q        <= pc_d;
+      cmp_flag_q  <= cmp_flag_d;
       pwm_value_q <= pwm_value_d;
       reg_value_q <= reg_value_d;
     end
