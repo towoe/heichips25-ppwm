@@ -37,6 +37,7 @@ module ex #(
   command_e instr_cmd;
   target_e instr_trgt;
   logic [ImmWidth-1:0] instr_imm;
+  logic [COUNTER_WIDTH-1:0] instr_imm_sig_ext;
   logic [CtrlTransWidth-1:0] instr_ctrl_offset;
 
   // Instruction pattern
@@ -50,6 +51,7 @@ module ex #(
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[TargetPos-1]);
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
+  assign instr_imm_sig_ext = {{CntPadWidth{instr_imm[ImmWidth-1]}}, instr_imm};
   assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
 
   // PWM value and register storage
@@ -106,9 +108,9 @@ module ex #(
           end
           CMD_ARITH: begin
             if (instr_trgt == TRGT_REG) begin
-              reg_value_d = reg_value_q + {{CntPadWidth{1'b0}}, instr_imm};
+              reg_value_d = reg_value_q + instr_imm_sig_ext;
             end else if (instr_trgt == TRGT_PWM) begin
-              pwm_value_d = pwm_value_q + {{CntPadWidth{1'b0}}, instr_imm};
+              pwm_value_d = pwm_value_q + instr_imm_sig_ext;
             end
           end
           CMD_SHIFT: begin
