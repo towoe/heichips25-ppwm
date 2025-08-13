@@ -28,7 +28,8 @@ async def pwm_test(dut):
     dut.rst_n.value = 1
     await Timer(100, "ns")
 
-    # Initialize memory with program instructions (7-bit values)
+    # Initialize memory with program instructions
+    # 16 x 7-bit instructions
     program = [
         0b0100001,  # set, pwm, 1
         0b0100010,  # add, pwm, 1
@@ -36,11 +37,17 @@ async def pwm_test(dut):
         0b0100010,  # add, pwm, 1
         0b0101100,  # wai
         0b1000101,  # jmp
-        # Add more instructions as needed...
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
+        0b0000000,  # nop
     ]
-
-    # Fill remaining addresses with zeros
-    program.extend([0b0000000] * (32 - len(program)))
 
     # Load program into memory
     await load_program_to_memory(dut, program)
