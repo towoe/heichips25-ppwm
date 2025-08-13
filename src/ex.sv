@@ -3,7 +3,7 @@
 
 module ex #(
     parameter int COUNTER_WIDTH = 8,
-    parameter int INSTR_WIDTH = 6,
+    parameter int INSTR_WIDTH = 7,
     parameter int PC_WIDTH = 4
 ) (
     input  logic                     clk,
@@ -18,7 +18,7 @@ module ex #(
   import ppwm_pkg::*;
   localparam int OpcodeWidth = 3;
   localparam int ImmWidth = 2;
-  localparam int CtrlTransWidth = 3;
+  localparam int CtrlTransWidth = 4;
 
   typedef enum logic [1:0] {
     StIdle = 2'b00,  // Idle state
@@ -40,9 +40,7 @@ module ex #(
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[OpcodeWidth]);
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
-  assign instr_ctrl_offset = {
-    {(PC_WIDTH - OpcodeWidth) {instr_i[INSTR_WIDTH-1]}}, instr_i[INSTR_WIDTH-1:OpcodeWidth]
-  };
+  assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
 
   // PWM value and register storage
   logic [COUNTER_WIDTH-1:0] pwm_value_d, pwm_value_q;

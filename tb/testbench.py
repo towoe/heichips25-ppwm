@@ -28,19 +28,19 @@ async def pwm_test(dut):
     dut.rst_n.value = 1
     await Timer(100, "ns")
 
-    # Initialize memory with program instructions (6-bit values)
+    # Initialize memory with program instructions (7-bit values)
     program = [
-        0b010001,  # set, pwm, 1
-        0b010010,  # add, pwm, 1
-        0b010010,  # add, pwm, 1
-        0b010010,  # add, pwm, 1
-        0b101100,  # wai
-        0b101101,  # jmp
+        0b0100001,  # set, pwm, 1
+        0b0100010,  # add, pwm, 1
+        0b0100010,  # add, pwm, 1
+        0b0100010,  # add, pwm, 1
+        0b0101100,  # wai
+        0b1000101,  # jmp
         # Add more instructions as needed...
     ]
 
     # Fill remaining addresses with zeros
-    program.extend([0b000000] * (32 - len(program)))
+    program.extend([0b0000000] * (32 - len(program)))
 
     # Load program into memory
     await load_program_to_memory(dut, program)
@@ -57,9 +57,9 @@ async def load_program_to_memory(dut, program):
     dut.ui_in[0].value = 1
     await ClockCycles(dut.clk, 1)
     for _, instruction in enumerate(program):
-        # Send 6 bits of instruction data (LSB first)
-        print(f"Loading instruction: {instruction:06b}")
-        for bit in range(6):
+        # Send 7 bits of instruction data (LSB first)
+        print(f"Loading instruction: {instruction:07b}")
+        for bit in range(7):
             dut.ui_in[0].value = (instruction >> bit) & 1
             await ClockCycles(dut.clk, 1)
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module mem #(
-    parameter int WIDTH = 6,
+    parameter int WIDTH = 7,
     parameter int DEPTH = 32
 ) (
     input  logic                     clk,

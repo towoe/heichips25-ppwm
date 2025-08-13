@@ -3,7 +3,7 @@
 
 module ppwm #(
     parameter int COUNTER_WIDTH = 8,
-    parameter int INSTR_WIDTH = 6,
+    parameter int INSTR_WIDTH = 7,
     parameter int PC_WIDTH = 4
 ) (
     input  logic clk,
