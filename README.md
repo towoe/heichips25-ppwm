@@ -65,6 +65,20 @@ comparison operation.
 The counter for PWM is 10 bit wide. As long as the counter is smaller than the
 value receive by the execution unit, the output line is low.
 
+## Program example
+
+```
+0b011_0_001  # set pwm 1 # 3
+0b011_1_001  # set reg 3 # 3
+0b000_1_110  # cmp reg counter
+0b0001_111   # branch counter < reg, + 2
+0b0010_101   # jump +2
+0b001_0_010  # add pwm 1
+0b0001_000   # wait
+0b1011_101   # jump -5
+```
+
+
 ## License
 
 The code in this repository is licensed under Apache 2.0.
