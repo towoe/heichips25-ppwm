@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module ex #(
-    parameter int COUNTER_WIDTH = 8,
+    parameter int COUNTER_WIDTH = 10,
     parameter int INSTR_WIDTH = 7,
     parameter int PC_WIDTH = 4
 ) (
