@@ -3,6 +3,7 @@
 
 module ppwm #(
     parameter int COUNTER_WIDTH = 10,
+    parameter int GLOBAL_COUNTER_WIDTH = 20,
     parameter int INSTR_WIDTH = 7,
     parameter int PC_WIDTH = 4
 ) (
@@ -29,12 +30,12 @@ module ppwm #(
       .pwm_o(data_o)
   );
 
-  logic [COUNTER_WIDTH-1:0] global_counter_high;
+  logic [GLOBAL_COUNTER_WIDTH-1:0] global_counter_high;
 
   // Global counter for user functions
   counter #(
-      .WIDTH(20),
-      .HIGH_WIDTH(COUNTER_WIDTH)
+      .WIDTH(GLOBAL_COUNTER_WIDTH),
+      .HIGH_WIDTH(GLOBAL_COUNTER_WIDTH)
   ) u_global_counter (
       .clk(clk),
       .rst_n(rst_n),
