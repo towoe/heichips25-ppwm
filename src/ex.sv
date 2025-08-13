@@ -131,6 +131,7 @@ module ex #(
           end
           CMD_CMP_CNTR: begin
             // Compare global counter with register or PWM value
+            cmp_flag_d = 1'b0;
             if (instr_trgt == TRGT_REG) begin
               if (global_counter_i < reg_value_q) begin
                 cmp_flag_d = 1'b1;
