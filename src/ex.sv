@@ -3,16 +3,17 @@
 
 module ex #(
     parameter int COUNTER_WIDTH = 10,
+    parameter int GLOBAL_COUNTER_WIDTH = 20,
     parameter int INSTR_WIDTH = 7,
     parameter int PC_WIDTH = 4
 ) (
-    input  logic                     clk,
-    input  logic                     rst_n,
-    input  logic                     start_i,           // Start of new PWM period
-    input  logic [COUNTER_WIDTH-1:0] global_counter_i,  // Upper value of global counter
-    input  logic [  INSTR_WIDTH-1:0] instr_i,
-    output logic [     PC_WIDTH-1:0] pc_o,
-    output logic [COUNTER_WIDTH-1:0] pwm_value_o
+    input  logic                            clk,
+    input  logic                            rst_n,
+    input  logic                            start_i,           // Start of new PWM period
+    input  logic [GLOBAL_COUNTER_WIDTH-1:0] global_counter_i,  // Upper value of global counter
+    input  logic [         INSTR_WIDTH-1:0] instr_i,
+    output logic [            PC_WIDTH-1:0] pc_o,
+    output logic [       COUNTER_WIDTH-1:0] pwm_value_o
 );
 
   import ppwm_pkg::*;
@@ -51,7 +52,7 @@ module ex #(
   // FSM control:     [xxxx_CCC]
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[TargetPos-1]);
-  assign instr_cmp_args = cmp_args_e'(instr_i[OpcodeWidth+1:OpcodeWidth]);
+  assign instr_cmp_args = cmp_args_e'(instr_i[OpcodeWidth+2:OpcodeWidth]);
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
   assign instr_imm_sig_ext = {{CntPadWidth{instr_imm[ImmWidth-1]}}, instr_imm};
   assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
@@ -137,13 +138,23 @@ module ex #(
             // Compare operation
             cmp_flag_d = 1'b0;
             case (instr_cmp_args)
-              CMP_GCNT_PWM: begin
-                if (global_counter_i < pwm_value_q) begin
+              CMP_GCNT_L_PWM: begin
+                if (global_counter_i[COUNTER_WIDTH-1:0] < pwm_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
               end
-              CMP_GCNT_REG: begin
-                if (global_counter_i < reg_value_q) begin
+              CMP_GCNT_H_PWM: begin
+                if (global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH] < pwm_value_q) begin
+                  cmp_flag_d = 1'b1;
+                end
+              end
+              CMP_GCNT_L_REG: begin
+                if (global_counter_i[COUNTER_WIDTH-1:0] < reg_value_q) begin
+                  cmp_flag_d = 1'b1;
+                end
+              end
+              CMP_GCNT_H_REG: begin
+                if (global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH] < reg_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
               end

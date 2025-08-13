@@ -19,10 +19,12 @@ package ppwm_pkg;
     TRGT_REG = 1'b1   // Target is register
   } target_e;
 
-  typedef enum logic [1:0] {
-    CMP_GCNT_PWM = 2'b00,
-    CMP_GCNT_REG = 2'b01,
-    CMP_PWM_REG  = 2'b10
+  typedef enum logic [2:0] {
+    CMP_GCNT_L_PWM = 3'b000,
+    CMP_GCNT_H_PWM = 3'b100,
+    CMP_GCNT_L_REG = 3'b001,
+    CMP_GCNT_H_REG = 3'b101,
+    CMP_PWM_REG    = 3'b010
   } cmp_args_e;
 
 endpackage
