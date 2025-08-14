@@ -105,7 +105,6 @@ if __name__ == "__main__":
         sources.append(testbench_path / "../src/ex.sv")
         sources.append(testbench_path / "../src/mem.sv")
         sources.append(testbench_path / "../src/pwm.sv")
-        sources.append(testbench_path / "../src/serial_in.sv")
         sources.append(testbench_path / "../src/heichips25_ppwm.sv")
         defines = {"RTL": True}
 
