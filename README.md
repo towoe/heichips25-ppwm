@@ -67,15 +67,20 @@ value receive by the execution unit, the output line is low.
 
 ## Program example
 
+A simple program which increases the PWM value only if the lower global counter
+bits are smaller than the REG value.
+The underscores are separating the different groups in the instructions.
+Control transfer values are given in the offset to the current instruction.
+
 ```
-0b011_0_001  # set pwm 1 # 3
-0b011_1_001  # set reg 3 # 3
-0b000_1_110  # cmp reg counter
-0b0001_111   # branch counter < reg, + 2
-0b0010_101   # jump +2
-0b001_0_010  # add pwm 1
-0b0001_000   # wait
-0b1011_101   # jump -5
+    011_0_001  #0 set pwm 3
+    011_1_001  #1 set reg 3
+    0_001_110  #2 cmp gcntl < reg
+    _0010_111  #3 branch #5
+    _0010_101  #4 jump #6
+    001_0_010  #5 add pwm 1
+    _0001_000  #6 wait
+    _1010_101  #7 jump #2
 ```
 
 ## Physical results

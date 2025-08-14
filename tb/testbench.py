@@ -31,14 +31,14 @@ async def pwm_test(dut):
     # Initialize memory with program instructions
     # 16 x 7-bit instructions
     program = [
-        0b0100001,  # set, pwm, 1
-        0b0100010,  # add, pwm, 1
-        0b0100010,  # add, pwm, 1
-        0b0100010,  # add, pwm, 1
-        0b0001000,  # ctrl wait
-        0b1000101,  # jmp
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
+        0b011_0_001,  #0 set pwm 3
+        0b011_1_001,  #1 set reg 3
+        0b0_001_110,  #2 cmp gcntl < reg
+        0b_0010_111,  #3 branch #5
+        0b_0010_101,  #4 jump #6
+        0b001_0_010,  #5 add pwm 1
+        0b_0001_000,  #6 wait
+        0b_1010_101,  #7 jump #2
         0b0000000,  # ctrl nop
         0b0000000,  # ctrl nop
         0b0000000,  # ctrl nop
