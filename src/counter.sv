@@ -8,7 +8,7 @@ module counter #(
     input  logic                  clk,
     input  logic                  rst_n,
     input  logic                  tick_i,
-    output logic [HIGH_WIDTH-1:0] high_value_o
+    output logic [HIGH_WIDTH-1:0] value_o
 );
 
   logic [WIDTH-1:0] counter;
@@ -21,6 +21,6 @@ module counter #(
     end
   end
 
-  assign high_value_o = counter[WIDTH-1:WIDTH-HIGH_WIDTH];
+  assign value_o = counter[WIDTH-1:WIDTH-HIGH_WIDTH];
 
 endmodule

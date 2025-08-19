@@ -30,7 +30,7 @@ module ppwm #(
       .pwm_o(data_o)
   );
 
-  logic [GLOBAL_COUNTER_WIDTH-1:0] global_counter_high;
+  logic [GLOBAL_COUNTER_WIDTH-1:0] global_counter;
 
   // Global counter for user functions
   counter #(
@@ -40,7 +40,7 @@ module ppwm #(
       .clk(clk),
       .rst_n(rst_n),
       .tick_i(period_start),
-      .high_value_o(global_counter_high)
+      .value_o(global_counter)
   );
 
   logic [PC_WIDTH-1:0] pc;
@@ -54,7 +54,7 @@ module ppwm #(
       .clk(clk),
       .rst_n(rst_n),
       .start_i(period_start),
-      .global_counter_i(global_counter_high),
+      .global_counter_i(global_counter),
       .instr_i(instr),
       .pc_o(pc),
       .pwm_value_o(pwm_value)
