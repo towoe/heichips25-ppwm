@@ -43,14 +43,6 @@ module ex #(
   logic [COUNTER_WIDTH-1:0] instr_imm_sig_ext;
   logic [CtrlTransWidth-1:0] instr_ctrl_offset;
 
-  // Instruction pattern
-  // I: immediate
-  // T: target (register or PWM)
-  // C: command code
-  // O: offset for jump or branch
-  // Register access: [III_T_CCC]
-  // Control flow:    [OOOO_CCC]
-  // FSM control:     [xxxx_CCC]
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[TargetPos-1]);
   assign instr_cmp_args = cmp_args_e'(instr_i[OpcodeWidth+2:OpcodeWidth]);

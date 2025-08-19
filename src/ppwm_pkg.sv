@@ -3,6 +3,32 @@
 
 package ppwm_pkg;
 
+  // All instructions are 7 bits wide
+  // All instructions use 3 bits for the opcode
+  //   [xxxx ccc] with c defined in `command_e`
+  // They differentiate on how they use the upper 4 bits
+  // - CMD_CTRL
+  //   [ffff 000]   f: 4 bits for FSM control
+  //
+  // - CMD_SET
+  //   [III t 001]
+  // - CMD_ARITH
+  //   [III t 010]  t: target (0 = PWM, 1 = REG)
+  //                I: 3 immediate bits, signed
+  // - CMD_SHIFT
+  //   [xx d t 011] t: target (0 = PWM, 1 = REG)
+  //                d: shift direction (0 = right, 1 = left)
+  // - CMD_CMP (if a < b, set flag)
+  //   [x PPP 110]  P: compare arguments defined in `cmp_args_e`
+  //
+  // - CMD_JUMP
+  //   [OOOO 101]
+  // - CMD_BRANCH (compare flag set)
+  //   [OOOO 111]   O: signed offset
+  //
+  // - CMD_MV
+  //   [x MMM 100]  M: move arguments defined in `mv_args_e`
+
   typedef enum logic [2:0] {
     CMD_CTRL   = 3'b000,  // FSM control
     CMD_SET    = 3'b001,  // Set starting value
