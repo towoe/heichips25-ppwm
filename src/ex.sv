@@ -113,15 +113,15 @@ module ex #(
           CMD_SHIFT: begin
             if (instr_trgt == TRGT_REG) begin
               if (instr_imm[0]) begin
-                reg_value_d = {reg_value_q[COUNTER_WIDTH-2:0], 1'b0};  // Shift left
+                reg_value_d = reg_value_q << (instr_imm[2:1] + 1);  // Shift left
               end else begin
-                reg_value_d = {1'b0, reg_value_q[COUNTER_WIDTH-1:1]};  // Shift right
+                reg_value_d = reg_value_q >> (instr_imm[2:1] + 1);  // Shift right
               end
             end else if (instr_trgt == TRGT_PWM) begin
               if (instr_imm[0]) begin
-                pwm_value_d = {pwm_value_q[COUNTER_WIDTH-2:0], 1'b0};  // Shift left
+                pwm_value_d = pwm_value_q << (instr_imm[2:1] + 1);  // Shift left
               end else begin
-                pwm_value_d = {1'b0, pwm_value_q[COUNTER_WIDTH-1:1]};  // Shift right
+                pwm_value_d = pwm_value_q >> (instr_imm[2:1] + 1);  // Shift right
               end
             end
           end

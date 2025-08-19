@@ -50,7 +50,7 @@ async def pwm_test(dut):
     ]
     program_test_mv = [
         0b011_1_001,  # 0 set reg, 3
-        0b00_1_1_011,  # 1 shift reg left
+        0b11_1_1_011,  # 1 shift reg left
         0b00_1_1_011,  # 2 shift reg left
         0b00_1_1_011,  # 3 shift reg left
         0b0_001_110,  # 4 cmp global counter < reg

@@ -16,8 +16,9 @@ package ppwm_pkg;
   //   [III t 010]  t: target (0 = PWM, 1 = REG)
   //                I: 3 immediate bits, signed
   // - CMD_SHIFT
-  //   [xx d t 011] t: target (0 = PWM, 1 = REG)
+  //   [ee d t 011] t: target (0 = PWM, 1 = REG)
   //                d: shift direction (0 = right, 1 = left)
+  //                e: shift amount (0 = 1, 1 = 2, 2 = 4, 3 = 8)
   // - CMD_CMP (if a < b, set flag)
   //   [x PPP 110]  P: compare arguments defined in `cmp_args_e`
   //
