@@ -31,14 +31,14 @@ async def pwm_test(dut):
     # Initialize memory with program instructions
     # 16 x 7-bit instructions
     program = [
-        0b011_0_001,  #0 set pwm 3
-        0b011_1_001,  #1 set reg 3
-        0b0_001_110,  #2 cmp gcntl < reg
-        0b_0010_111,  #3 branch #5
-        0b_0010_101,  #4 jump #6
-        0b001_0_010,  #5 add pwm 1
-        0b_0001_000,  #6 wait
-        0b_1010_101,  #7 jump #2
+        0b011_0_001,  # 0 set pwm 3
+        0b011_1_001,  # 1 set reg 3
+        0b0_001_110,  # 2 cmp gcntl < reg
+        0b_0010_111,  # 3 branch #5
+        0b_0010_101,  # 4 jump #6
+        0b001_0_010,  # 5 add pwm 1
+        0b_0001_000,  # 6 wait
+        0b_1010_101,  # 7 jump #2
         0b0000000,  # ctrl nop
         0b0000000,  # ctrl nop
         0b0000000,  # ctrl nop
@@ -48,14 +48,41 @@ async def pwm_test(dut):
         0b0000000,  # ctrl nop
         0b0000000,  # ctrl nop
     ]
+    program_test_mv = [
+        0b011_1_001,  # 0 set reg, 3
+        0b00_1_1_011,  # 1 shift reg left
+        0b00_1_1_011,  # 2 shift reg left
+        0b00_1_1_011,  # 3 shift reg left
+        0b0_001_110,  # 4 cmp global counter < reg
+        0b0011_111,  # 5 branch #8
+        0b0_000_100,  # 6 mv reg to pwm
+        0b0010_101,  # 7 jump +2
+        0b0_100_100,  # 8 mv global counter l to pwm
+        0b0001_000,  # 9 ctrl wait
+        0b1010_101,  # a jump #4
+        0b0000000,  # b
+        0b0000000,  # c
+        0b0000000,  # d
+        0b0000000,  # e
+        0b0000000,  # f
+    ]
 
     # Load program into memory
     await load_program_to_memory(dut, program)
-
     await ClockCycles(dut.clk, 2)
-
     # Wait for another half period to complete the cycle
-    await ClockCycles(dut.clk, 2048 * 8)
+    await ClockCycles(dut.clk, 2048 * 24)
+
+    # Reset the design for 100ns
+    dut.rst_n.value = 0
+    await Timer(100, "ns")
+    dut.rst_n.value = 1
+    await Timer(100, "ns")
+    # Load program into memory
+    await load_program_to_memory(dut, program_test_mv)
+    await ClockCycles(dut.clk, 2)
+    # Wait for another half period to complete the cycle
+    await ClockCycles(dut.clk, 2048 * 24)
 
 
 async def load_program_to_memory(dut, program):
