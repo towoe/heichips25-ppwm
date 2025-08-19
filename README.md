@@ -86,7 +86,7 @@ Control transfer values are given in the offset to the current instruction.
 ## Physical results
 
 __Area__
-OpenROAD reports an area usage of 30500 um². Memory uses 11500 um² alone.
+OpenROAD reports an area usage of 32500 um². Memory uses 11500 um² alone.
 
 ![OpenROAD area usage](images/chip_usage.png)
 
