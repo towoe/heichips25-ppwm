@@ -38,6 +38,7 @@ module ex #(
   command_e instr_cmd;
   target_e instr_trgt;
   cmp_args_e instr_cmp_args;
+  mv_args_e instr_mv_args;
   logic [ImmWidth-1:0] instr_imm;
   logic [COUNTER_WIDTH-1:0] instr_imm_sig_ext;
   logic [CtrlTransWidth-1:0] instr_ctrl_offset;
@@ -53,6 +54,7 @@ module ex #(
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[TargetPos-1]);
   assign instr_cmp_args = cmp_args_e'(instr_i[OpcodeWidth+2:OpcodeWidth]);
+  assign instr_mv_args = mv_args_e'(instr_i[OpcodeWidth+2:OpcodeWidth]);
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
   assign instr_imm_sig_ext = {{CntPadWidth{instr_imm[ImmWidth-1]}}, instr_imm};
   assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
@@ -162,6 +164,36 @@ module ex #(
                 if (pwm_value_q < reg_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
+              end
+              default: begin
+              end
+            endcase
+          end
+          CMD_MV: begin
+            case (instr_mv_args)
+              MV_REG_TO_PWM: begin
+                // Move register value to PWM value
+                pwm_value_d = reg_value_q;
+              end
+              MV_PWM_TO_REG: begin
+                // Move PWM value to register
+                reg_value_d = pwm_value_q;
+              end
+              MV_GCNT_L_REG: begin
+                // Move lower part of global counter to register
+                reg_value_d = global_counter_i[COUNTER_WIDTH-1:0];
+              end
+              MV_GCNT_H_REG: begin
+                // Move upper part of global counter to register
+                reg_value_d = global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH];
+              end
+              MV_GCNT_L_PWM: begin
+                // Move lower part of global counter to PWM value
+                pwm_value_d = global_counter_i[COUNTER_WIDTH-1:0];
+              end
+              MV_GCNT_H_PWM: begin
+                // Move upper part of global counter to PWM value
+                pwm_value_d = global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH];
               end
               default: begin
               end
