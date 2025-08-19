@@ -9,10 +9,11 @@ module ex #(
 ) (
     input  logic                            clk,
     input  logic                            rst_n,
-    input  logic                            start_i,           // Start of new PWM period
-    input  logic [GLOBAL_COUNTER_WIDTH-1:0] global_counter_i,  // Upper value of global counter
+    input  logic                            start_i,            // Start of new PWM period
+    input  logic [GLOBAL_COUNTER_WIDTH-1:0] global_counter_i,
     input  logic [         INSTR_WIDTH-1:0] instr_i,
     output logic [            PC_WIDTH-1:0] pc_o,
+    output logic                            output_polarity_o,
     output logic [       COUNTER_WIDTH-1:0] pwm_value_o
 );
 
@@ -34,6 +35,9 @@ module ex #(
   logic [PC_WIDTH-1:0] pc_d, pc_q;
   // Compare flag, set if global counter is smaller
   logic cmp_flag_d, cmp_flag_q;
+
+  // PWM output polarity
+  logic output_polarity_d, output_polarity_q;
 
   command_e instr_cmd;
   target_e instr_trgt;
@@ -60,6 +64,7 @@ module ex #(
     state_d = state_q;
     pc_d = pc_q;
     cmp_flag_d = cmp_flag_q;
+    output_polarity_d = output_polarity_q;
 
     // Default assignments
     pwm_value_d = pwm_value_q;
@@ -90,6 +95,12 @@ module ex #(
               4'b0001: begin
                 // Wait for a new start signal
                 state_d = StWait;
+              end
+              4'b0010: begin
+                output_polarity_d = 1'b0;  // Set output polarity to low
+              end
+              4'b0011: begin
+                output_polarity_d = 1'b1;  // Set output polarity to high
               end
               default: begin
                 // Unrecognized control command, do nothing
@@ -216,21 +227,24 @@ module ex #(
   // State transition logic
   always_ff @(posedge clk) begin
     if (!rst_n) begin
-      state_q     <= StIdle;
-      pc_q        <= '0;
-      cmp_flag_q  <= 1'b0;
-      pwm_value_q <= '0;
-      reg_value_q <= '0;
+      state_q           <= StIdle;
+      pc_q              <= '0;
+      cmp_flag_q        <= 1'b0;
+      pwm_value_q       <= '0;
+      reg_value_q       <= '0;
+      output_polarity_q <= 1'b0;
     end else begin
-      state_q     <= state_d;
-      pc_q        <= pc_d;
-      cmp_flag_q  <= cmp_flag_d;
-      pwm_value_q <= pwm_value_d;
-      reg_value_q <= reg_value_d;
+      state_q           <= state_d;
+      pc_q              <= pc_d;
+      cmp_flag_q        <= cmp_flag_d;
+      pwm_value_q       <= pwm_value_d;
+      reg_value_q       <= reg_value_d;
+      output_polarity_q <= output_polarity_d;
     end
   end
 
-  assign pc_o = pc_q;
-  assign pwm_value_o = pwm_value_q;
+  assign pc_o              = pc_q;
+  assign pwm_value_o       = pwm_value_q;
+  assign output_polarity_o = output_polarity_q;
 
 endmodule

@@ -15,6 +15,7 @@ module ppwm #(
 
   logic mem_write_done;
   logic period_start;
+  logic polarity;
 
   logic [COUNTER_WIDTH-1:0] pwm_value;
 
@@ -27,6 +28,7 @@ module ppwm #(
       .cmp_value_i(pwm_value),
       .pwm_set_i(mem_write_done),
       .period_start_o(period_start),
+      .output_polarity_i(polarity),
       .pwm_o(data_o)
   );
 
@@ -57,6 +59,7 @@ module ppwm #(
       .global_counter_i(global_counter),
       .instr_i(instr),
       .pc_o(pc),
+      .output_polarity_o(polarity),
       .pwm_value_o(pwm_value)
   );
 

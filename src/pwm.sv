@@ -9,6 +9,7 @@ module pwm #(
     input  logic [COUNTER_WIDTH-1:0] cmp_value_i,
     input  logic                     pwm_set_i,
     output logic                     period_start_o,
+    input  logic                     output_polarity_i,
     output logic                     pwm_o
 );
   logic [COUNTER_WIDTH-1:0] counter;
@@ -44,9 +45,9 @@ module pwm #(
         counter <= counter + 1;
       end
       if (counter < cmp_value) begin
-        pwm_o <= 1'b0;
+        pwm_o <= output_polarity_i ? 1'b1 : 1'b0;
       end else begin
-        pwm_o <= 1'b1;
+        pwm_o <= output_polarity_i ? 1'b0 : 1'b1;
       end
     end
   end

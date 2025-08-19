@@ -38,15 +38,15 @@ async def pwm_test(dut):
         0b_0010_101,  # 4 jump #6
         0b001_0_010,  # 5 add pwm 1
         0b_0001_000,  # 6 wait
-        0b_1010_101,  # 7 jump #2
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
-        0b0000000,  # ctrl nop
+        0b_0011_000,  # 7 ctrl output polarity
+        0b_1001_101,  # 8 jump #2
+        0b0000000,  # 9 ctrl nop
+        0b0000000,  # a ctrl nop
+        0b0000000,  # b ctrl nop
+        0b0000000,  # c ctrl nop
+        0b0000000,  # d ctrl nop
+        0b0000000,  # e ctrl nop
+        0b0000000,  # f ctrl nop
     ]
     program_test_mv = [
         0b011_1_001,  # 0 set reg, 3
