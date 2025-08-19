@@ -1,0 +1,6 @@
+[submodule "submodules/heichips25_SDR_new"]
+	path = submodules/heichips25_SDR_new
+	url = git@github.com:RainChinChao/heichips25_SDR_new.git
+[submodule "submodules/heichips25-ppwm"]
+	path = submodules/heichips25-ppwm
+	url = git@github.com:towoe/heichips25-ppwm.git

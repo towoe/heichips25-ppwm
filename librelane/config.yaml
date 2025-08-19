@@ -1,7 +1,21 @@
 # LibreLane configuration file
 
-DESIGN_NAME: heichips25_template
-VERILOG_FILES: dir::../src/heichips25_template.sv
+DESIGN_NAME: tiny_wrapper
+VERILOG_FILES: [
+  "dir::../src/tiny_wrapper.sv",
+  "dir::../submodules/heichips25-ppwm/src/heichips25_ppwm.sv",
+  "dir::../submodules/heichips25-ppwm/src/ppwm_pkg.sv",
+  "dir::../submodules/heichips25-ppwm/src/ppwm.sv",
+  "dir::../submodules/heichips25-ppwm/src/counter.sv",
+  "dir::../submodules/heichips25-ppwm/src/pwm.sv",
+  "dir::../submodules/heichips25-ppwm/src/ex.sv",
+  "dir::../submodules/heichips25-ppwm/src/mem.sv",
+  "dir::../submodules/heichips25_SDR_new/src/heichips25_template.sv",
+  "dir::../submodules/heichips25_SDR_new/src/matrix_accumulator.sv",
+  "dir::../submodules/heichips25_SDR_new/src/MAC4x4.sv",
+  "dir::../submodules/heichips25_SDR_new/src/InputProces.sv",
+  "dir::../submodules/heichips25_SDR_new/src/DP_Matrix_G.sv"
+]
 CLOCK_PORT: clk
 CLOCK_PERIOD: 10 # 10ns = 100MHz
 
@@ -27,4 +41,4 @@ PDN_MULTILAYER: false
 RT_MAX_LAYER: TopMetal1
 
 # Enable for better SystemVerilog support
-#USE_SLANG: true
+USE_SLANG: true
