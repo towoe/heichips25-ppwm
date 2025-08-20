@@ -68,6 +68,7 @@ async def pwm_test(dut):
     ]
 
     # Load program into memory
+    await ClockCycles(dut.clk, 1)
     await load_program_to_memory(dut, program)
     await ClockCycles(dut.clk, 2)
     # Wait for another half period to complete the cycle
@@ -75,9 +76,9 @@ async def pwm_test(dut):
 
     # Reset the design for 100ns
     dut.rst_n.value = 0
-    await Timer(100, "ns")
+    await ClockCycles(dut.clk, 1)
     dut.rst_n.value = 1
-    await Timer(100, "ns")
+    await ClockCycles(dut.clk, 1)
     # Load program into memory
     await load_program_to_memory(dut, program_test_mv)
     await ClockCycles(dut.clk, 2)
