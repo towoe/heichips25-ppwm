@@ -102,7 +102,7 @@ async def load_program_to_memory(dut, program):
 
 
 if __name__ == "__main__":
-    sim = os.getenv("SIM", "verilator")
+    sim = os.getenv("SIM", "icarus")
     pdk_root = os.getenv("PDK_ROOT", "~/.ciel")
     pdk = os.getenv("PDK", "ihp-sg13g2")
     scl = os.getenv("SCL", "sg13g2_stdcell")
