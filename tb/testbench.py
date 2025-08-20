@@ -13,6 +13,8 @@ from cocotb.triggers import Timer, ClockCycles, RisingEdge
 
 # ------------------------------
 # Import the PPWM testbench from the submodule
+#
+# Needs special handling due to the dash in the path
 # ------------------------------
 this_path = Path(__file__).resolve().parent
 ppwm_tb_path = this_path.parent / "submodules/heichips25-ppwm/tb/testbench.py"
@@ -62,24 +64,9 @@ async def pwm_test(dut):
     ]
 
     await exec_ppwm_test(dut, program)
-    # # Load program into memory
-    # await load_program_to_memory(dut, program)
-    #
-    # await ClockCycles(dut.clk, 2)
-    #
-    # # Wait for another half period to complete the cycle
-    # await ClockCycles(dut.clk, 2048 * 8)
 
     dut.ena.value = 1  # Disable PPWM, enable SDR
     await exec_ppwm_test(dut, program)
-
-    # # Load program into memory
-    # await load_program_to_memory(dut, program)
-    #
-    # await ClockCycles(dut.clk, 2)
-    #
-    # # Wait for another half period to complete the cycle
-    # await ClockCycles(dut.clk, 2048 * 8)
 
 
 async def exec_ppwm_test(dut, program):
