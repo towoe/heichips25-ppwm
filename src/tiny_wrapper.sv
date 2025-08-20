@@ -31,10 +31,9 @@ module tiny_wrapper (
     wire rst_n_sdr;
     wire ena_sdr;
 
-    // If ena = 1, the PPWM project will be active and if ena = 0, the SDR will be active
+    // If ena = 0, the PPWM project will be active and if ena = 1, the SDR will be active
     assign ena_sdr = ena;
     assign ena_ppwm = ~ena_sdr; // Only one project is enabled at the same time
-
 
     assign uo_out = ena_ppwm ? uo_out_ppwm : uo_out_sdr;
     assign uio_out = ena_ppwm ? uio_out_ppwm : uio_out_sdr;
