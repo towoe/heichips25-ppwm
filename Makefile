@@ -25,6 +25,12 @@ copy-macro:
 	cp -r librelane/runs/${RUN_TAG}/final/* macro/
 .PHONY: copy-macro
 
+add-logo: macro/gds_logo/heichips25_ppwm.gds
+.PHONY: add-logo
+macro/gds_logo/heichips25_ppwm.gds: macro/gds/heichips25_ppwm.gds logo/gds/logo.gds
+	mkdir -p macro/gds_logo
+	python3 scripts/insert_logo.py $^ $@
+
 # Simulation & Verification
 
 sim:
