@@ -25,7 +25,7 @@ spec.loader.exec_module(ppwm_tb)
 
 
 @cocotb.test()
-async def pwm_test(dut):
+async def compare_wrapper_vs_gold(dut):
     """Testing the PWM output behavior."""
 
     # Create a clock with a period of 10ns = 100MHz
@@ -63,6 +63,8 @@ async def pwm_test(dut):
         0b0000000,  # ctrl nop
     ]
 
+    cocotb.start_soon(checker(dut))
+
     await exec_ppwm_test(dut, program)
 
     dut.ena.value = 1  # Disable PPWM, enable SDR
@@ -78,6 +80,27 @@ async def exec_ppwm_test(dut, program):
 
     # Wait for another half period to complete the cycle
     await ClockCycles(dut.clk, 2048 * 8)
+
+
+async def checker(dut):
+    """Asynchronous checker that compares wrapper vs. standalone outputs."""
+    while True:
+        await RisingEdge(dut.clk)
+
+        # Only check when ena is asserted
+        if not dut.ena.value:
+            assert dut.tiny_wrapper_i.uo_out.value == dut.ppwm_i.uo_out.value, (
+                f"Mismatch: wrapper={dut.tiny_wrapper_i.uo_out.value} ppwm={dut.ppwm_i.uo_out.value}"
+            )
+        # FIXME: check against the SDR instance once it is fixed
+        else:
+            gold = "zzzzzzzz"
+            assert dut.tiny_wrapper_i.uo_out.value == gold, (
+                f"Mismatch: wrapper={dut.tiny_wrapper_i.uo_out.value} gold={gold}"
+            )
+            # assert dut.tiny_wrapper_i.uo_out.value == dut.sdr_i.uo_out.value, (
+            #     f"Mismatch: wrapper={dut.tiny_wrapper_i.uo_out.value} sdr={dut.sdr_i.uo_out.value}"
+            # )
 
 
 async def load_program_to_memory(dut, program):
@@ -103,7 +126,7 @@ if __name__ == "__main__":
     gl = os.getenv("GL", False)
 
     testbench_path = Path(__file__).resolve().parent
-    sources = []  # [testbench_path / 'testbench.sv']
+    sources = []
     defines = {}
 
     MACRO_NL = testbench_path / "../macro/nl/tiny_wrapper.nl.v"
@@ -131,9 +154,10 @@ if __name__ == "__main__":
         sources.extend(
             list(testbench_path.glob("../submodules/heichips25_SDR_new/src/*"))
         )
+        sources.extend(list(testbench_path.glob("testbench.sv")))
         defines = {"RTL": True}
 
-    hdl_toplevel = "tiny_wrapper"
+    hdl_toplevel = "testbench"
 
     runner = get_runner(sim)
     runner.build(
