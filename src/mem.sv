@@ -17,9 +17,9 @@ module mem #(
   logic [$clog2(WIDTH*DEPTH)-1:0] bit_count;
 
   typedef enum logic [1:0] {
-    StIdle,
-    StShift,
-    StDone
+    StIdle  = 2'b00,
+    StShift = 2'b01,
+    StDone  = 2'b10
   } state_e;
 
   state_e state_d, state_q;
@@ -28,7 +28,7 @@ module mem #(
   always_comb begin
     state_d = state_q;
 
-    unique case (state_q)
+    case (state_q)
       StIdle: begin
         if (data_i) begin
           state_d = StShift;
@@ -48,7 +48,9 @@ module mem #(
         end
       end
 
-      default: state_d = StIdle;
+      default: begin
+        state_d = StIdle;
+      end
     endcase
   end
 
