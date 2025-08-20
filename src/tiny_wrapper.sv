@@ -36,9 +36,9 @@ module tiny_wrapper (
     assign ena_ppwm = ~ena_sdr; // Only one project is enabled at the same time
 
 
-    assign uo_out = ena ? uo_out_ppwm : uo_out_sdr;
-    assign uio_out = ena ? uio_out_ppwm : uio_out_sdr;
-    assign uio_oe = ena ? uio_oe_ppwm : uio_oe_sdr;
+    assign uo_out = ena_ppwm ? uo_out_ppwm : uo_out_sdr;
+    assign uio_out = ena_ppwm ? uio_out_ppwm : uio_out_sdr;
+    assign uio_oe = ena_ppwm ? uio_oe_ppwm : uio_oe_sdr;
 
     // Reset the project that is not enabled. Also reset if the external
     // reset is triggered.
