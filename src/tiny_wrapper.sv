@@ -18,7 +18,6 @@ module tiny_wrapper (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-    wire [7:0] ui_in_ppwm;
     wire [7:0] uo_out_ppwm;
     wire [7:0] uio_out_ppwm;
     wire [7:0] uio_oe_ppwm;
