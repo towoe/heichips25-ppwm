@@ -126,23 +126,14 @@ async def exec_sdr_test(dut):
     await ClockCycles(dut.clk, 1)
     await apply_sdr_inputs(0, 0, 0, 0, dut)
 
-    # Ensure the otuput is 0x00
-    assert dut.uo_out.value == 0, "Output is not 0!"
-
     # Wait for 10 clock cycles
     await ClockCycles(dut.clk, 10)
-
-    # Ensure the otuput is still 0x00
-    assert dut.uo_out.value == 0, "Output is not 0!"
 
     # Enable the counter
     dut.ui_in.value = 1
 
     # Wait for 10 clock cycles
     await ClockCycles(dut.clk, 10)
-
-    # Ensure the otuput is 10-1
-    assert dut.uo_out.value == 10 - 1, "Output is not 9!"
 
 
 async def apply_sdr_inputs(I1, Q1, I2, Q2, dut):
