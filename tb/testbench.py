@@ -146,19 +146,21 @@ async def exec_sdr_test(dut):
 
 
 async def apply_sdr_inputs(I1, Q1, I2, Q2, dut):
-    """Execute the test for the sdr module."""
+    """Apply the test stimuli to the sdr module."""
     dut.tiny_wrapper_i.ui_in = Q1 << 4 | I1
     dut.tiny_wrapper_i.uio_in = Q2 << 4 | I2
     await ClockCycles(dut.clk, 1)
 
 
 async def check_wrapper_vs_dut_values(wrapper_value, project_value, project_name):
+    """Check the wrapper output values against the dut output values."""
     assert wrapper_value == project_value, (
         f"Mismatch: wrapper={wrapper_value} {project_name}={project_value}"
     )
 
 
 async def check_wrapper_vs_project_all_outputs(dut, project, project_name):
+    """Wrap the checks for all outputs."""
     await check_wrapper_vs_dut_values(
         dut.tiny_wrapper_i.uo_out.value, project.uo_out.value, project_name
     )
