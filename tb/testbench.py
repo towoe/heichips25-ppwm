@@ -11,8 +11,8 @@ from cocotb.triggers import Timer, ClockCycles
 
 
 @cocotb.test()
-async def pwm_test(dut):
-    """Testing the PWM output behavior."""
+async def pwm_test_execute(dut):
+    # Setup for running the test standalone
 
     # Create a clock with a period of 10ns = 100MHz
     clock = Clock(dut.clk, 10, "ns")
@@ -26,6 +26,13 @@ async def pwm_test(dut):
     dut.rst_n.value = 0
     await Timer(100, "ns")
     await Timer(100, "ns")
+
+    # Just calling the function that can be imported by external modules here
+    await pwm_test(dut)
+
+
+async def pwm_test(dut):
+    """Testing the PWM output behavior."""
 
     # Initialize memory with program instructions
     # 16 x 7-bit instructions
