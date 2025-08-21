@@ -37,15 +37,14 @@ module testbench (
         .uio_oe(uio_oe_wrapper)
     );
 
-    // FIXME: uncomment once the design is fixed
-    // heichips25_template heichpis_sdr_i (
-    //     .clk(clk),
-    //     .rst_n(rst_n),
-    //     .ena(ena),
-    //     .ui_in(ui_in),
-    //     .uio_in(uio_in),
-    //     .uo_out(uo_out_ppwm),
-    //     .uio_out(uio_out_ppwm),
-    //     .uio_oe(uio_oe_ppwm)
-    // );
+    heichips25_template sdr_i (
+        .clk(clk),
+        .rst_n(rst_n),
+        .ena(1'b1),
+        .ui_in(ui_in),
+        .uio_in(uio_in),
+        .uo_out(uo_out_sdr),
+        .uio_out(uio_out_sdr),
+        .uio_oe(uio_oe_sdr)
+    );
 endmodule
