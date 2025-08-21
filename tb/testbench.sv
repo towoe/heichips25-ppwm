@@ -14,10 +14,11 @@ module testbench (
     output [7:0] uio_out_sdr,
     output [7:0] uio_oe_sdr
 );
+
     heichips25_ppwm ppwm_i (
         .clk(clk),
         .rst_n(rst_n),
-        .ena(ena),
+        .ena(1'b1),
         .ui_in(ui_in),
         .uio_in(uio_in),
         .uo_out(uo_out_ppwm),
