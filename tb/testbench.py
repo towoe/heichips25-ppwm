@@ -111,6 +111,64 @@ async def exec_ppwm_test(dut, program):
     await ClockCycles(dut.clk, 2048 * 24)
 
 
+async def exec_sdr_test(dut):
+    """Execute the test for the sdr module."""
+    await apply_sdr_inputs(0, 2, 0, 2, dut)
+    await ClockCycles(dut.clk, 1)
+    await apply_sdr_inputs(0, 2, 0, 2, dut)
+    await ClockCycles(dut.clk, 1)
+    await apply_sdr_inputs(0, 2, 0, 2, dut)
+    await ClockCycles(dut.clk, 1)
+    await apply_sdr_inputs(0, 2, 0, 2, dut)
+    await ClockCycles(dut.clk, 1)
+    await apply_sdr_inputs(0, 2, 0, 2, dut)
+    await ClockCycles(dut.clk, 1)
+    await apply_sdr_inputs(0, 0, 0, 0, dut)
+
+    # Ensure the otuput is 0x00
+    assert dut.uo_out.value == 0, "Output is not 0!"
+
+    # Wait for 10 clock cycles
+    await ClockCycles(dut.clk, 10)
+
+    # Ensure the otuput is still 0x00
+    assert dut.uo_out.value == 0, "Output is not 0!"
+
+    # Enable the counter
+    dut.ui_in.value = 1
+
+    # Wait for 10 clock cycles
+    await ClockCycles(dut.clk, 10)
+
+    # Ensure the otuput is 10-1
+    assert dut.uo_out.value == 10 - 1, "Output is not 9!"
+
+
+async def apply_sdr_inputs(I1, Q1, I2, Q2, dut):
+    """Execute the test for the sdr module."""
+    dut.tiny_wrapper_i.ui_in = Q1 << 4 | I1
+    dut.tiny_wrapper_i.uio_in = Q2 << 4 | I2
+    await ClockCycles(dut.clk, 1)
+
+
+async def check_wrapper_vs_dut_values(wrapper_value, project_value, project_name):
+    assert wrapper_value == project_value, (
+        f"Mismatch: wrapper={wrapper_value} {project_name}={project_value}"
+    )
+
+
+async def check_wrapper_vs_project_all_outputs(dut, project, project_name):
+    await check_wrapper_vs_dut_values(
+        dut.tiny_wrapper_i.uo_out.value, project.uo_out.value, project_name
+    )
+    await check_wrapper_vs_dut_values(
+        dut.tiny_wrapper_i.uio_out.value, project.uio_out.value, project_name
+    )
+    await check_wrapper_vs_dut_values(
+        dut.tiny_wrapper_i.uio_oe.value, project.uio_oe.value, project_name
+    )
+
+
 async def checker(dut):
     """Asynchronous checker that compares wrapper vs. standalone outputs."""
     while True:
@@ -118,18 +176,9 @@ async def checker(dut):
 
         # Only check when ena is asserted
         if not dut.ena.value:
-            assert dut.tiny_wrapper_i.uo_out.value == dut.ppwm_i.uo_out.value, (
-                f"Mismatch: wrapper={dut.tiny_wrapper_i.uo_out.value} ppwm={dut.ppwm_i.uo_out.value}"
-            )
-        # FIXME: check against the SDR instance once it is fixed
+            await check_wrapper_vs_project_all_outputs(dut, dut.ppwm_i, "PPWM")
         else:
-            gold = "zzzzzzzz"
-            assert dut.tiny_wrapper_i.uo_out.value == gold, (
-                f"Mismatch: wrapper={dut.tiny_wrapper_i.uo_out.value} gold={gold}"
-            )
-            # assert dut.tiny_wrapper_i.uo_out.value == dut.sdr_i.uo_out.value, (
-            #     f"Mismatch: wrapper={dut.tiny_wrapper_i.uo_out.value} sdr={dut.sdr_i.uo_out.value}"
-            # )
+            await check_wrapper_vs_project_all_outputs(dut, dut.sdr_i, "SDR")
 
 
 if __name__ == "__main__":
