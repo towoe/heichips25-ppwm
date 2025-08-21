@@ -45,7 +45,7 @@ module tiny_wrapper (
     assign rst_n_sdr = ena_sdr & rst_n;
 
     // Instantiation of the PPWM project
-    heichips25_ppwm heichips25_ppwm_i (
+    heichips25_ppwm ppwm_i (
         .ui_in(ui_in),
         .uo_out(uo_out_ppwm),
         .uio_in(uio_in),
