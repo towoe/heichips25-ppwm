@@ -57,15 +57,15 @@ module tiny_wrapper (
     );
 
     // Instantiation of the SDR project
-    // heichips25_template heichips25_template_i (
-    //     .ui_in(ui_in),
-    //     .uo_out(uo_out_sdr),
-    //     .uio_in(uio_in),
-    //     .uio_out(uio_out_sdr),
-    //     .uio_oe(uio_oe_sdr),
-    //     .ena(1'b1), // The internal enable signal is always 1
-    //     .clk(clk),
-    //     .rst_n(rst_n_sdr)
-    // );
+    heichips25_template sdr_i (
+        .ui_in(ui_in),
+        .uo_out(uo_out_sdr),
+        .uio_in(uio_in),
+        .uio_out(uio_out_sdr),
+        .uio_oe(uio_oe_sdr),
+        .ena(1'b1), // The internal enable signal is always 1
+        .clk(clk),
+        .rst_n(rst_n_sdr)
+    );
 
 endmodule
