@@ -1,23 +1,19 @@
-# HeiChips 2025 Hackathon Template
+# HeiChips 2025 Tiny Wrapper
 
-This repository is the submission template for the HeiChips 2025 Hackathon.
+This repository contains a wrapper for the
+[SDR](https://github.com/RainChinChao/heichips25_SDR_new) and the
+[PPWM](https://github.com/towoe/heichips25-ppwm) project, since these occupy
+less than half of the small template.
 
-Please implement your group project based on this template and notify us once you are done, so we can integrate your macro into the chip for tapeout. See [Submission](#Submission).
+![A screenshot of the design opened in openROAD](doc/img/openroad.png "'Tiny Wrapper'")
 
-Your project will be connected to a small eFPGA along with all other user projects. This allows you to configure the eFPGA to route the I/Os of your project to the chip I/Os, implement additional logic in the eFPGA, connect several user projects together (ask what other teams are working on!), and make use of the SRAM.
-For more information, see the HeiChips 2025 Tapeout repository: https://github.com/FPGA-Research/heichips25-tapeout
+Due to the limited number of pins, only one design can be active at a time. The
+designs can be selected using the `ena` input.
 
-> [!IMPORTANT]
-> You must rename the top-level of your design to make it unique. It must start with `heichips25_`, for example `heichips25_best_project_4ever`.
-> Make sure to update the top-level name throughout the repository.
-
-In order to ensure smooth integration of your macro into the chip, we provide two different DEF templates which specify the geometry of your macro and the pin positions.
-The smaller DEF template is used by default and is 500um x 200um in size, the larger DEF template is 500um x 415um in size. If you would like to use the second template, please talk to us, as there are limited slots available for it.
-
-> [!TIP]
-> If you only need a tiny fraction of the small DEF template, please coordinate and merge with another team to make the best possible use of the area.
-
-All submitted designs will be included on the chip (given the space), however, one team will be selected for the **HeiChips 2025 Award** based on several factors. The exact criteria will be announced before the Hackathon.
+| `ena`       | Selected Project   |
+|:-----------:|:------------------:|
+|  0          |  PPWM              |
+|  1          |   SDR              |
 
 ## Prerequisites
 
@@ -149,29 +145,15 @@ make macro-klayout
 
 ## Submission
 
-In order to submit your design for integration into the HeiChips 2025 Tapeout, please open an issue at the following repository: https://github.com/FPGA-Research/heichips25-tapeout/issues
-
-**The submission deadline is August 17, anywhere on earth.**
-
-The issue should contain the following information:
-
-- The name of your group
-- The name of your project
-- The group members
-- The link to your repository
-
-> [!IMPORTANT]
-> Your template repository needs to contain the final macro in the `macro/` folder.
-
 Checklist:
 
-- [ ] The project top-level has a unique name starting with `heichips25_`.
-- [ ] The design is verified and tested.
-- [ ] The macro is stored under `macro/`.
-- [ ] `TopMetal2` in the macro is empty (for integration).
-- [ ] The macro is DRC clean (minimal DRC set without fill checks).
-- [ ] The macro uses the default power pins (VPWR, VGND).
-- [ ] The project is licensed under Apache 2.0.
+- [x] The project top-level has a unique name starting with `heichips25_`.
+- [x] The design is verified and tested.
+- [x] The macro is stored under `macro/`.
+- [x] `TopMetal2` in the macro is empty (for integration).
+- [x] The macro is DRC clean (minimal DRC set without fill checks).
+- [x] The macro uses the default power pins (VPWR, VGND).
+- [x] The project is licensed under Apache 2.0.
 
 ## License
 
