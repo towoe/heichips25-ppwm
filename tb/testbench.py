@@ -138,8 +138,8 @@ async def exec_sdr_test(dut):
 
 async def apply_sdr_inputs(I1, Q1, I2, Q2, dut):
     """Apply the test stimuli to the sdr module."""
-    dut.heichips25_tiny_wrapper_i.ui_in = Q1 << 4 | I1
-    dut.heichips25_tiny_wrapper_i.uio_in = Q2 << 4 | I2
+    dut.heichips25_tiny_wrapper_i.ui_in.value = Q1 << 4 | I1
+    dut.heichips25_tiny_wrapper_i.uio_in.value = Q2 << 4 | I2
     await ClockCycles(dut.clk, 1)
 
 
