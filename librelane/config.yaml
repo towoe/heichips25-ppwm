@@ -1,8 +1,8 @@
 # LibreLane configuration file
 
-DESIGN_NAME: tiny_wrapper
+DESIGN_NAME: heichips25_tiny_wrapper
 VERILOG_FILES: [
-  "dir::../src/tiny_wrapper.sv",
+  "dir::../src/heichips25_tiny_wrapper.sv",
   "dir::../submodules/heichips25-ppwm/src/heichips25_ppwm.sv",
   "dir::../submodules/heichips25-ppwm/src/ppwm_pkg.sv",
   "dir::../submodules/heichips25-ppwm/src/ppwm.sv",

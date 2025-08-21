@@ -7,7 +7,7 @@
 // `include "../../submodules/heichips25-ppwm/src/heichips25_ppwm.sv"
 // `include "../../submodules/heichips25_SDR_new/src/heichips25_template.sv"
 
-module tiny_wrapper (
+module heichips25_tiny_wrapper (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path

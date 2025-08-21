@@ -26,7 +26,7 @@ module testbench (
         .uio_oe(uio_oe_ppwm)
     );
 
-    tiny_wrapper tiny_wrapper_i (
+    heichips25_tiny_wrapper heichips25_tiny_wrapper_i (
         .clk(clk),
         .rst_n(rst_n),
         .ena(ena),

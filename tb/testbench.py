@@ -147,8 +147,8 @@ async def exec_sdr_test(dut):
 
 async def apply_sdr_inputs(I1, Q1, I2, Q2, dut):
     """Apply the test stimuli to the sdr module."""
-    dut.tiny_wrapper_i.ui_in = Q1 << 4 | I1
-    dut.tiny_wrapper_i.uio_in = Q2 << 4 | I2
+    dut.heichips25_tiny_wrapper_i.ui_in = Q1 << 4 | I1
+    dut.heichips25_tiny_wrapper_i.uio_in = Q2 << 4 | I2
     await ClockCycles(dut.clk, 1)
 
 
@@ -162,13 +162,13 @@ async def check_wrapper_vs_dut_values(wrapper_value, project_value, project_name
 async def check_wrapper_vs_project_all_outputs(dut, project, project_name):
     """Wrap the checks for all outputs."""
     await check_wrapper_vs_dut_values(
-        dut.tiny_wrapper_i.uo_out.value, project.uo_out.value, project_name
+        dut.heichips25_tiny_wrapper_i.uo_out.value, project.uo_out.value, project_name
     )
     await check_wrapper_vs_dut_values(
-        dut.tiny_wrapper_i.uio_out.value, project.uio_out.value, project_name
+        dut.heichips25_tiny_wrapper_i.uio_out.value, project.uio_out.value, project_name
     )
     await check_wrapper_vs_dut_values(
-        dut.tiny_wrapper_i.uio_oe.value, project.uio_oe.value, project_name
+        dut.heichips25_tiny_wrapper_i.uio_oe.value, project.uio_oe.value, project_name
     )
 
 
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     sources = []
     defines = {}
 
-    MACRO_NL = testbench_path / "../macro/nl/tiny_wrapper.nl.v"
+    MACRO_NL = testbench_path / "../macro/nl/heichips25_tiny_wrapper.nl.v"
 
     if gl:
         if not MACRO_NL.exists():
