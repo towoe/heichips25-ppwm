@@ -76,7 +76,7 @@ async def compare_wrapper_vs_gold(dut):
     dut.ui_in.value = 0
     dut.uio_in.value = 0
 
-    # Reset the design for 100ns
+    # Reset the designs for 100ns
     dut.rst_n.value = 0
     await Timer(100, "ns")
     dut.rst_n.value = 1
@@ -99,7 +99,7 @@ async def exec_ppwm_test(dut, program):
     # Wait for another half period to complete the cycle
     await ClockCycles(dut.clk, 2048 * 24)
 
-    # Reset the design for 100ns
+    # Reset the design for 10ns
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 1)
     dut.rst_n.value = 1
