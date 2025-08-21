@@ -84,13 +84,14 @@ async def compare_wrapper_vs_gold(dut):
 
     cocotb.start_soon(checker(dut))
 
-    await exec_ppwm_test(dut, PROGRAM)
+    await exec_ppwm_test(dut)
 
     dut.ena.value = 1  # Disable PPWM, enable SDR
-    await exec_ppwm_test(dut, PROGRAM_TEST_MV)
+
+    await exec_sdr_test(dut)
 
 
-async def exec_ppwm_test(dut, program):
+async def exec_ppwm_test(dut):
     """Execute the test for the ppwm module."""
     # Load program into memory
     await ClockCycles(dut.clk, 1)
