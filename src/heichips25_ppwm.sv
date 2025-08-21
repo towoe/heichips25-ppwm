@@ -17,7 +17,7 @@ module heichips25_ppwm (
 );
 
   // List all unused inputs to prevent warnings
-  wire  _unused = &{ena, ui_in[7:1], uio_in[7:0]};
+  wire  _unused = &{ena, ui_in[7:2], uio_in[7:0]};
 
   ppwm #(
       .COUNTER_WIDTH(10)
@@ -25,6 +25,7 @@ module heichips25_ppwm (
       .clk(clk),
       .rst_n(rst_n),
       .data_i(ui_in[0]),
+      .clk_data_i(ui_in[1]),
       .data_o(uo_out[0])
   );
 

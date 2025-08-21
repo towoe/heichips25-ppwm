@@ -10,6 +10,7 @@ module ppwm #(
     input  logic clk,
     input  logic rst_n,
     input  logic data_i,
+    input  logic clk_data_i,
     output logic data_o
 );
 
@@ -67,9 +68,9 @@ module ppwm #(
   // Serial line for programming, high start bit
   mem #(
       .WIDTH(INSTR_WIDTH),
-      .DEPTH(PC_WIDTH**2)
+      .DEPTH(PC_WIDTH ** 2)
   ) u_mem (
-      .clk(clk),
+      .clk(clk_data_i),
       .rst_n(rst_n),
       .data_i(data_i),
       .addr_i(pc),

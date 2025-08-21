@@ -25,7 +25,6 @@ async def pwm_test(dut):
     # Reset the design for 100ns
     dut.rst_n.value = 0
     await Timer(100, "ns")
-    dut.rst_n.value = 1
     await Timer(100, "ns")
 
     # Initialize memory with program instructions
@@ -68,7 +67,9 @@ async def pwm_test(dut):
     ]
 
     # Load program into memory
-    await ClockCycles(dut.clk, 1)
+    await program_clk(dut)
+    dut.rst_n.value = 1
+    await program_clk(dut)
     await load_program_to_memory(dut, program)
     await ClockCycles(dut.clk, 2)
     # Wait for another half period to complete the cycle
@@ -76,9 +77,9 @@ async def pwm_test(dut):
 
     # Reset the design for 100ns
     dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 1)
+    await program_clk(dut)
     dut.rst_n.value = 1
-    await ClockCycles(dut.clk, 1)
+    await program_clk(dut)
     # Load program into memory
     await load_program_to_memory(dut, program_test_mv)
     await ClockCycles(dut.clk, 2)
@@ -90,15 +91,22 @@ async def load_program_to_memory(dut, program):
     """Load a program into the memory module via serial interface."""
     # Send start bit (high)
     dut.ui_in[0].value = 1
-    await ClockCycles(dut.clk, 1)
+    await program_clk(dut)
     for _, instruction in enumerate(program):
         # Send 7 bits of instruction data (LSB first)
         print(f"Loading instruction: {instruction:07b}")
         for bit in range(7):
             dut.ui_in[0].value = (instruction >> bit) & 1
-            await ClockCycles(dut.clk, 1)
+            await program_clk(dut)
 
     # cocotb documentation: https://docs.cocotb.org/en/stable/refcard.html
+
+
+async def program_clk(dut):
+    dut.ui_in[1].value = 1
+    await ClockCycles(dut.clk, 10)
+    dut.ui_in[1].value = 0
+    await ClockCycles(dut.clk, 10)
 
 
 if __name__ == "__main__":
