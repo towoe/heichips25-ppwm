@@ -3,7 +3,7 @@ all: macro copy-final
 PDK_ROOT ?= ~/.ciel
 PDK ?= ihp-sg13g2
 
-RUN_TAG = $(shell ls librelane/runs/ -1 | tail -n 1)
+RUN_TAG = $(shell ls librelane/runs/ | tail -n 1)
 
 # Macro - LibreLane
 
