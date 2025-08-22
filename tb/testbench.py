@@ -23,46 +23,6 @@ spec = importlib.util.spec_from_file_location("ppwm_tb", ppwm_tb_path)
 ppwm_tb = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ppwm_tb)
 
-# Initialize memory with program instructions
-# 16 x 7-bit instructions
-PROGRAM = [
-    0b011_0_001,  # 0 set pwm 3
-    0b011_1_001,  # 1 set reg 3
-    0b0_001_110,  # 2 cmp gcntl < reg
-    0b_0010_111,  # 3 branch #5
-    0b_0010_101,  # 4 jump #6
-    0b001_0_010,  # 5 add pwm 1
-    0b_0001_000,  # 6 wait
-    0b_1010_101,  # 7 jump #2
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-    0b0000000,  # ctrl nop
-]
-
-PROGRAM_TEST_MV = [
-    0b011_1_001,  # 0 set reg, 3
-    0b11_1_1_011,  # 1 shift reg left
-    0b00_1_1_011,  # 2 shift reg left
-    0b00_1_1_011,  # 3 shift reg left
-    0b0_001_110,  # 4 cmp global counter < reg
-    0b0011_111,  # 5 branch #8
-    0b0_000_100,  # 6 mv reg to pwm
-    0b0010_101,  # 7 jump +2
-    0b0_100_100,  # 8 mv global counter l to pwm
-    0b0001_000,  # 9 ctrl wait
-    0b1010_101,  # a jump #4
-    0b0000000,  # b
-    0b0000000,  # c
-    0b0000000,  # d
-    0b0000000,  # e
-    0b0000000,  # f
-]
-
 
 @cocotb.test()
 async def compare_wrapper_vs_gold(dut):
@@ -91,25 +51,16 @@ async def compare_wrapper_vs_gold(dut):
     await exec_sdr_test(dut)
 
 
+@cocotb.test()
 async def exec_ppwm_test(dut):
     """Execute the test for the ppwm module."""
-    # Load program into memory
-    await ClockCycles(dut.clk, 1)
-    await ppwm_tb.load_program_to_memory(dut, PROGRAM)
-    await ClockCycles(dut.clk, 2)
-    # Wait for another half period to complete the cycle
-    await ClockCycles(dut.clk, 2048 * 24)
+    # Set PPWM-specific signals
+    dut.ena.value = 0  # PPWM expects ena=0
+    dut.ui_in.value = 0
+    dut.uio_in.value = 0
 
-    # Reset the design for 10ns
-    dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 1)
-    dut.rst_n.value = 1
-    await ClockCycles(dut.clk, 1)
-    # Load program into memory
-    await ppwm_tb.load_program_to_memory(dut, PROGRAM_TEST_MV)
-    await ClockCycles(dut.clk, 2)
-    # Wait for another half period to complete the cycle
-    await ClockCycles(dut.clk, 2048 * 24)
+    # Call the extracted test sequence function from PPWM testbench
+    await ppwm_tb.pwm_test(dut)
 
 
 async def exec_sdr_test(dut):
