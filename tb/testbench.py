@@ -10,10 +10,63 @@ from cocotb.runner import get_runner
 from cocotb.triggers import Timer, ClockCycles
 
 
+async def run_pwm_test_sequence(dut, programs=None):
+    """Run the PWM test sequence with given programs or defaults."""
+    if programs is None:
+        programs = [
+            [  # Default program 1
+                0b011_0_001,  # 0 set pwm 3
+                0b011_1_001,  # 1 set reg 3
+                0b0_001_110,  # 2 cmp gcntl < reg
+                0b_0010_111,  # 3 branch #5
+                0b_0010_101,  # 4 jump #6
+                0b001_0_010,  # 5 add pwm 1
+                0b_0001_000,  # 6 wait
+                0b_0011_000,  # 7 ctrl output polarity
+                0b_1001_101,  # 8 jump #2
+                0b0000000,  # 9 ctrl nop
+                0b0000000,  # a ctrl nop
+                0b0000000,  # b ctrl nop
+                0b0000000,  # c ctrl nop
+                0b0000000,  # d ctrl nop
+                0b0000000,  # e ctrl nop
+                0b0000000,  # f ctrl nop
+            ],
+            [  # Test MV program
+                0b011_1_001,  # 0 set reg, 3
+                0b11_1_1_011,  # 1 shift reg left
+                0b00_1_1_011,  # 2 shift reg left
+                0b00_1_1_011,  # 3 shift reg left
+                0b0_001_110,  # 4 cmp global counter < reg
+                0b0011_111,  # 5 branch #8
+                0b0_000_100,  # 6 mv reg to pwm
+                0b0010_101,  # 7 jump +2
+                0b0_100_100,  # 8 mv global counter l to pwm
+                0b0001_000,  # 9 ctrl wait
+                0b1010_101,  # a jump #4
+                0b0000000,  # b
+                0b0000000,  # c
+                0b0000000,  # d
+                0b0000000,  # e
+                0b0000000,  # f
+            ]
+        ]
+
+    for i, program in enumerate(programs):
+        if i > 0:  # Reset between programs
+            dut.rst_n.value = 0
+            await program_clk(dut)
+            dut.rst_n.value = 1
+            await program_clk(dut)
+
+        await load_program_to_memory(dut, program)
+        await ClockCycles(dut.clk, 2)
+        await ClockCycles(dut.clk, 2048 * 24)
+
+
 @cocotb.test()
 async def pwm_test(dut):
     """Testing the PWM output behavior."""
-
     # Create a clock with a period of 10ns = 100MHz
     clock = Clock(dut.clk, 10, "ns")
     await cocotb.start(clock.start())
@@ -26,65 +79,11 @@ async def pwm_test(dut):
     dut.rst_n.value = 0
     await Timer(100, "ns")
     await Timer(100, "ns")
-
-    # Initialize memory with program instructions
-    # 16 x 7-bit instructions
-    program = [
-        0b011_0_001,  # 0 set pwm 3
-        0b011_1_001,  # 1 set reg 3
-        0b0_001_110,  # 2 cmp gcntl < reg
-        0b_0010_111,  # 3 branch #5
-        0b_0010_101,  # 4 jump #6
-        0b001_0_010,  # 5 add pwm 1
-        0b_0001_000,  # 6 wait
-        0b_0011_000,  # 7 ctrl output polarity
-        0b_1001_101,  # 8 jump #2
-        0b0000000,  # 9 ctrl nop
-        0b0000000,  # a ctrl nop
-        0b0000000,  # b ctrl nop
-        0b0000000,  # c ctrl nop
-        0b0000000,  # d ctrl nop
-        0b0000000,  # e ctrl nop
-        0b0000000,  # f ctrl nop
-    ]
-    program_test_mv = [
-        0b011_1_001,  # 0 set reg, 3
-        0b11_1_1_011,  # 1 shift reg left
-        0b00_1_1_011,  # 2 shift reg left
-        0b00_1_1_011,  # 3 shift reg left
-        0b0_001_110,  # 4 cmp global counter < reg
-        0b0011_111,  # 5 branch #8
-        0b0_000_100,  # 6 mv reg to pwm
-        0b0010_101,  # 7 jump +2
-        0b0_100_100,  # 8 mv global counter l to pwm
-        0b0001_000,  # 9 ctrl wait
-        0b1010_101,  # a jump #4
-        0b0000000,  # b
-        0b0000000,  # c
-        0b0000000,  # d
-        0b0000000,  # e
-        0b0000000,  # f
-    ]
-
-    # Load program into memory
-    await program_clk(dut)
     dut.rst_n.value = 1
     await program_clk(dut)
-    await load_program_to_memory(dut, program)
-    await ClockCycles(dut.clk, 2)
-    # Wait for another half period to complete the cycle
-    await ClockCycles(dut.clk, 2048 * 24)
 
-    # Reset the design for 100ns
-    dut.rst_n.value = 0
-    await program_clk(dut)
-    dut.rst_n.value = 1
-    await program_clk(dut)
-    # Load program into memory
-    await load_program_to_memory(dut, program_test_mv)
-    await ClockCycles(dut.clk, 2)
-    # Wait for another half period to complete the cycle
-    await ClockCycles(dut.clk, 2048 * 24)
+    # Run the test sequence
+    await run_pwm_test_sequence(dut)
 
 
 async def load_program_to_memory(dut, program):
