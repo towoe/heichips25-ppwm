@@ -3,7 +3,6 @@
 DESIGN_NAME: heichips25_ppwm
 VERILOG_FILES: [
   "dir::../src/heichips25_ppwm.sv",
-  "dir::../src/ppwm_pkg.sv",
   "dir::../src/ppwm.sv",
   "dir::../src/counter.sv",
   "dir::../src/pwm.sv",
@@ -41,4 +40,4 @@ PDN_MULTILAYER: false
 RT_MAX_LAYER: TopMetal1
 
 # Enable for better SystemVerilog support
-USE_SLANG: true
+USE_SLANG: false
