@@ -66,30 +66,30 @@ library (heichips25_ppwm) {
   }
 
   cell ("heichips25_ppwm") {
-    area : 93345.484 
+    area : 93345.391 
     is_macro_cell : true;
     pin("clk") {
       direction : input;
       clock : true;
-      capacitance : 0.0252;
+      capacitance : 0.0352;
       timing() {
         timing_sense : positive_unate;
         timing_type : min_clock_tree_path;
 	cell_rise(scalar) {
-          values("0.54796");
+          values("0.56397");
 	}
 	cell_fall(scalar) {
-          values("0.53275");
+          values("0.54601");
 	}
       }
       timing() {
         timing_sense : positive_unate;
         timing_type : max_clock_tree_path;
 	cell_rise(scalar) {
-          values("0.56037");
+          values("0.57887");
 	}
 	cell_fall(scalar) {
-          values("0.54401");
+          values("0.55957");
 	}
       }
     }
@@ -99,25 +99,25 @@ library (heichips25_ppwm) {
     }
     pin("rst_n") {
       direction : input;
-      capacitance : 0.0408;
+      capacitance : 0.0467;
       timing() {
         related_pin : "clk";
         timing_type : hold_rising;
 	rise_constraint(scalar) {
-          values("0.10078");
+          values("0.10590");
 	}
 	fall_constraint(scalar) {
-          values("0.20690");
+          values("0.20747");
 	}
       }
       timing() {
         related_pin : "clk";
         timing_type : setup_rising;
 	rise_constraint(scalar) {
-          values("1.47096");
+          values("1.65583");
 	}
 	fall_constraint(scalar) {
-          values("1.43766");
+          values("1.60009");
 	}
       }
     }
@@ -151,7 +151,27 @@ library (heichips25_ppwm) {
     }
     pin("ui_in[1]") {
       direction : input;
-      capacitance : 0.0000;
+      capacitance : 0.0027;
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+	rise_constraint(scalar) {
+          values("0.37238");
+	}
+	fall_constraint(scalar) {
+          values("0.42631");
+	}
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+	rise_constraint(scalar) {
+          values("-0.27958");
+	}
+	fall_constraint(scalar) {
+          values("-0.29718");
+	}
+      }
     }
     pin("ui_in[0]") {
       direction : input;
@@ -160,20 +180,20 @@ library (heichips25_ppwm) {
         related_pin : "clk";
         timing_type : hold_rising;
 	rise_constraint(scalar) {
-          values("0.09496");
+          values("0.37751");
 	}
 	fall_constraint(scalar) {
-          values("0.17569");
+          values("0.43091");
 	}
       }
       timing() {
         related_pin : "clk";
         timing_type : setup_rising;
 	rise_constraint(scalar) {
-          values("0.74987");
+          values("-0.28490");
 	}
 	fall_constraint(scalar) {
-          values("0.69562");
+          values("-0.30194");
 	}
       }
     }
@@ -225,7 +245,7 @@ library (heichips25_ppwm) {
     }
     pin("uio_oe[6]") {
       direction : output;
-      capacitance : 0.0004;
+      capacitance : 0.0006;
     }
     pin("uio_oe[5]") {
       direction : output;
@@ -245,11 +265,11 @@ library (heichips25_ppwm) {
     }
     pin("uio_oe[1]") {
       direction : output;
-      capacitance : 0.0013;
+      capacitance : 0.0006;
     }
     pin("uio_oe[0]") {
       direction : output;
-      capacitance : 0.0003;
+      capacitance : 0.0005;
     }
     }
     bus("uio_out") {
@@ -258,7 +278,7 @@ library (heichips25_ppwm) {
       capacitance : 0.0000;
     pin("uio_out[7]") {
       direction : output;
-      capacitance : 0.0007;
+      capacitance : 0.0004;
     }
     pin("uio_out[6]") {
       direction : output;
@@ -278,7 +298,7 @@ library (heichips25_ppwm) {
     }
     pin("uio_out[2]") {
       direction : output;
-      capacitance : 0.0005;
+      capacitance : 0.0006;
     }
     pin("uio_out[1]") {
       direction : output;
@@ -286,7 +306,7 @@ library (heichips25_ppwm) {
     }
     pin("uio_out[0]") {
       direction : output;
-      capacitance : 0.0006;
+      capacitance : 0.0007;
     }
     }
     bus("uo_out") {
@@ -295,31 +315,31 @@ library (heichips25_ppwm) {
       capacitance : 0.0000;
     pin("uo_out[7]") {
       direction : output;
-      capacitance : 0.0005;
+      capacitance : 0.0014;
     }
     pin("uo_out[6]") {
       direction : output;
-      capacitance : 0.0006;
+      capacitance : 0.0013;
     }
     pin("uo_out[5]") {
       direction : output;
-      capacitance : 0.0008;
+      capacitance : 0.0012;
     }
     pin("uo_out[4]") {
       direction : output;
-      capacitance : 0.0005;
+      capacitance : 0.0013;
     }
     pin("uo_out[3]") {
       direction : output;
-      capacitance : 0.0004;
+      capacitance : 0.0006;
     }
     pin("uo_out[2]") {
       direction : output;
-      capacitance : 0.0003;
+      capacitance : 0.0004;
     }
     pin("uo_out[1]") {
       direction : output;
-      capacitance : 0.0005;
+      capacitance : 0.0006;
     }
     pin("uo_out[0]") {
       direction : output;
@@ -329,19 +349,19 @@ library (heichips25_ppwm) {
         timing_type : rising_edge;
 	cell_rise(template_1) {
           index_1("0.00100,  0.02340,  0.03900,  0.06480,  0.10800,  0.18000,  0.30000");
-          values("1.00373,1.10629,1.17454,1.28691,1.47490,1.78739,2.30889");
+          values("1.00903,1.11156,1.17978,1.29214,1.48008,1.79260,2.31407");
 	}
 	rise_transition(template_1) {
           index_1("0.00100,  0.02340,  0.03900,  0.06480,  0.10800,  0.18000,  0.30000");
-          values("0.02578,0.16043,0.25721,0.41845,0.68692,1.13456,1.88165");
+          values("0.02546,0.16042,0.25720,0.41836,0.68687,1.13451,1.88165");
 	}
 	cell_fall(template_1) {
           index_1("0.00100,  0.02340,  0.03900,  0.06480,  0.10800,  0.18000,  0.30000");
-          values("0.98614,1.07700,1.13511,1.23077,1.39062,1.65656,2.09986");
+          values("0.99345,1.08422,1.14234,1.23797,1.39783,1.66376,2.10709");
 	}
 	fall_transition(template_1) {
           index_1("0.00100,  0.02340,  0.03900,  0.06480,  0.10800,  0.18000,  0.30000");
-          values("0.02429,0.13111,0.20819,0.33623,0.55114,0.90839,1.50452");
+          values("0.02410,0.13109,0.20818,0.33623,0.55110,0.90839,1.50452");
 	}
       }
     }
