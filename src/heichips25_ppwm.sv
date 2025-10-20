@@ -25,7 +25,7 @@ module heichips25_ppwm (
       .clk(clk),
       .rst_n(rst_n),
       .data_i(ui_in[0]),
-      .clk_data_i(ui_in[1]),
+      .mem_prog_clk_i(ui_in[1]),
       .data_o(uo_out[0])
   );
 

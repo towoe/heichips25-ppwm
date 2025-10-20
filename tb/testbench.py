@@ -111,9 +111,9 @@ async def load_program_to_memory(dut, program):
 
 async def program_clk(dut):
     dut.ui_in[1].value = 1
-    await ClockCycles(dut.clk, 10)
+    await ClockCycles(dut.clk, 5)
     dut.ui_in[1].value = 0
-    await ClockCycles(dut.clk, 10)
+    await ClockCycles(dut.clk, 5)
 
 
 if __name__ == "__main__":

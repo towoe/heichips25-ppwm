@@ -6,6 +6,7 @@ module mem #(
     parameter int DEPTH = 32
 ) (
     input  logic                     clk,
+    input  logic                     clk_prog,
     input  logic                     rst_n,
     input  logic                     data_i,
     input  logic [$clog2(DEPTH)-1:0] addr_i,
@@ -16,75 +17,61 @@ module mem #(
   logic [WIDTH*DEPTH-1:0] memory;
   logic [$clog2(WIDTH*DEPTH)-1:0] bit_count;
 
-  typedef enum logic [1:0] {
-    StIdle  = 2'b00,
-    StShift = 2'b01,
-    StDone  = 2'b10
-  } state_e;
+  // Synchronize programming clock to system domain for edge detection
+  logic clk_prog_sync1, clk_prog_sync2, clk_prog_sync3;
+  logic clk_prog_posedge;
 
-  state_e state_d, state_q;
-
-  // Combinational logic for next state
-  always_comb begin
-    state_d = state_q;
-
-    case (state_q)
-      StIdle: begin
-        if (data_i) begin
-          state_d = StShift;
-        end
-      end
-
-      StShift: begin
-        if (bit_count == $clog2(WIDTH * DEPTH)'(WIDTH * DEPTH - 1)) begin
-          state_d = StDone;
-        end
-      end
-
-      StDone: begin
-        // Stay in this state to signal programmed memory
-        if (data_i) begin
-          state_d = StIdle;
-        end
-      end
-
-      default: begin
-        state_d = StIdle;
-      end
-    endcase
-  end
-
-  // State register
-  always_ff @(posedge clk) begin
+  always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-      state_q <= StIdle;
+      clk_prog_sync1 <= 1'b0;
+      clk_prog_sync2 <= 1'b0;
+      clk_prog_sync3 <= 1'b0;
     end else begin
-      state_q <= state_d;
+      clk_prog_sync1 <= clk_prog;
+      clk_prog_sync2 <= clk_prog_sync1;
+      clk_prog_sync3 <= clk_prog_sync2;
     end
   end
 
-  // Counter and shift register
+  assign clk_prog_posedge = clk_prog_sync2 && !clk_prog_sync3;
+
+  // Synchronize data input
+  logic data_sync1, data_sync2;
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      data_sync1 <= 1'b0;
+      data_sync2 <= 1'b0;
+    end else begin
+      data_sync1 <= data_i;
+      data_sync2 <= data_sync1;
+    end
+  end
+
+  logic programming;
+
+// Counter and shift register
   always_ff @(posedge clk) begin
     if (!rst_n) begin
       bit_count <= '0;
       memory <= '0;
-    end else begin
-      unique case (state_q)
-        StIdle: begin
-          bit_count <= '0;
+      programming <= 1'b0;
+    end else if (clk_prog_posedge) begin
+      if (data_sync2 && !programming) begin
+        // Start bit detected - begin programming on next edge
+        programming <= 1'b1;
+        bit_count <= '0;
+      end else if (programming) begin
+        memory    <= {data_sync2, memory[WIDTH*DEPTH-1:1]};
+        bit_count <= bit_count + 1;
+        if (bit_count == $clog2(WIDTH * DEPTH)'(WIDTH * DEPTH - 1)) begin
+          programming <= 1'b0;
         end
-        StShift: begin
-          memory    <= {data_i, memory[WIDTH*DEPTH-1:1]};
-          bit_count <= bit_count + 1;
-        end
-        default: begin
-        end
-      endcase
+      end
     end
   end
 
   // Parallel read access
   assign data_o = memory[addr_i*WIDTH+:WIDTH];
-  assign programmed_o = (state_q == StDone);
+  assign programmed_o = (bit_count == $clog2(WIDTH * DEPTH)'(WIDTH * DEPTH));
 
 endmodule

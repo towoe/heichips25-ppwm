@@ -10,7 +10,7 @@ module ppwm #(
     input  logic clk,
     input  logic rst_n,
     input  logic data_i,
-    input  logic clk_data_i,
+    input  logic mem_prog_clk_i,
     output logic data_o
 );
 
@@ -70,7 +70,8 @@ module ppwm #(
       .WIDTH(INSTR_WIDTH),
       .DEPTH(PC_WIDTH ** 2)
   ) u_mem (
-      .clk(clk_data_i),
+      .clk(clk),
+      .clk_prog(mem_prog_clk_i),
       .rst_n(rst_n),
       .data_i(data_i),
       .addr_i(pc),
