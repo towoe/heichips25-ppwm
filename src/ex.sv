@@ -78,6 +78,12 @@ module ex #(
   logic [ImmWidth-1:0] instr_imm;
   logic [COUNTER_WIDTH-1:0] instr_imm_sig_ext;
   logic [CtrlTransWidth-1:0] instr_ctrl_offset;
+  logic [1:0] shift_imm;
+  logic shift_dir;
+  logic [INSTR_WIDTH-3-1:0] instr_ctrl_bits;
+
+  logic [COUNTER_WIDTH-1:0] counter_val_low;
+  logic [COUNTER_WIDTH-1:0] counter_val_high;
 
   assign instr_cmd = command_e'(instr_i[OpcodeWidth-1:0]);
   assign instr_trgt = target_e'(instr_i[TargetPos-1]);
@@ -86,6 +92,14 @@ module ex #(
   assign instr_imm = instr_i[INSTR_WIDTH-1:INSTR_WIDTH-ImmWidth];
   assign instr_imm_sig_ext = {{CntPadWidth{instr_imm[ImmWidth-1]}}, instr_imm};
   assign instr_ctrl_offset = instr_i[INSTR_WIDTH-1:OpcodeWidth];
+
+  assign shift_imm = instr_imm[2:1];
+  assign shift_dir = instr_imm[0];
+
+  assign instr_ctrl_bits = instr_i[INSTR_WIDTH-1:OpcodeWidth];
+
+  assign counter_val_low = global_counter_i[COUNTER_WIDTH-1:0];
+  assign counter_val_high = global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH];
 
   // PWM value and register storage
   logic [COUNTER_WIDTH-1:0] pwm_value_d, pwm_value_q;
@@ -120,7 +134,7 @@ module ex #(
           CMD_CTRL: begin
             // FSM control commands
             // Uses a bit pattern to change behaviour
-            case (instr_i[INSTR_WIDTH-1:OpcodeWidth])
+            case (instr_ctrl_bits)
               4'b0000: begin
                 // NOP
               end
@@ -155,16 +169,16 @@ module ex #(
           end
           CMD_SHIFT: begin
             if (instr_trgt == TRGT_REG) begin
-              if (instr_imm[0]) begin
-                reg_value_d = reg_value_q << (instr_imm[2:1] + 1);  // Shift left
+              if (shift_dir) begin
+                reg_value_d = reg_value_q << (shift_imm + 1);  // Shift left
               end else begin
-                reg_value_d = reg_value_q >> (instr_imm[2:1] + 1);  // Shift right
+                reg_value_d = reg_value_q >> (shift_imm + 1);  // Shift right
               end
             end else if (instr_trgt == TRGT_PWM) begin
-              if (instr_imm[0]) begin
-                pwm_value_d = pwm_value_q << (instr_imm[2:1] + 1);  // Shift left
+              if (shift_dir) begin
+                pwm_value_d = pwm_value_q << (shift_imm + 1);  // Shift left
               end else begin
-                pwm_value_d = pwm_value_q >> (instr_imm[2:1] + 1);  // Shift right
+                pwm_value_d = pwm_value_q >> (shift_imm + 1);  // Shift right
               end
             end
           end
@@ -176,22 +190,22 @@ module ex #(
             cmp_flag_d = 1'b0;
             case (instr_cmp_args)
               CMP_GCNT_L_PWM: begin
-                if (global_counter_i[COUNTER_WIDTH-1:0] < pwm_value_q) begin
+                if (counter_val_low < pwm_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
               end
               CMP_GCNT_H_PWM: begin
-                if (global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH] < pwm_value_q) begin
+                if (counter_val_high < pwm_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
               end
               CMP_GCNT_L_REG: begin
-                if (global_counter_i[COUNTER_WIDTH-1:0] < reg_value_q) begin
+                if (counter_val_low < reg_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
               end
               CMP_GCNT_H_REG: begin
-                if (global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH] < reg_value_q) begin
+                if (counter_val_high < reg_value_q) begin
                   cmp_flag_d = 1'b1;
                 end
               end
@@ -216,19 +230,19 @@ module ex #(
               end
               MV_GCNT_L_REG: begin
                 // Move lower part of global counter to register
-                reg_value_d = global_counter_i[COUNTER_WIDTH-1:0];
+                reg_value_d = counter_val_low;
               end
               MV_GCNT_H_REG: begin
                 // Move upper part of global counter to register
-                reg_value_d = global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH];
+                reg_value_d = counter_val_high;
               end
               MV_GCNT_L_PWM: begin
                 // Move lower part of global counter to PWM value
-                pwm_value_d = global_counter_i[COUNTER_WIDTH-1:0];
+                pwm_value_d = counter_val_low;
               end
               MV_GCNT_H_PWM: begin
                 // Move upper part of global counter to PWM value
-                pwm_value_d = global_counter_i[GLOBAL_COUNTER_WIDTH-1:COUNTER_WIDTH];
+                pwm_value_d = counter_val_high;
               end
               default: begin
               end
