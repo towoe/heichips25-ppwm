@@ -47,7 +47,7 @@ bits. Control transfer has access to 4 bits.
 
 The execution unit stores 2 values. Both are 10 bit wide, the same width as the
 PWM max value.
-One register is used to forward the new duty cylce to PWM. The other register
+One register is used to forward the new duty cycle to PWM. The other register
 serves to hold user values.
 
 ### Memory
@@ -64,6 +64,32 @@ comparison operation.
 
 The counter for PWM is 10 bit wide. As long as the counter is smaller than the
 value receive by the execution unit, the output line is low.
+
+## Getting started
+
+### RTL Simulation
+
+```sh
+nix-shell
+source .venv/bin/activate
+make sim
+```
+
+### Physical layout generation
+
+```sh
+nix-shell
+make macro
+```
+
+### Gate-Level Simulation
+
+```sh
+nix-shell
+source .venv/bin/activate
+ciel enable --pdk-family ihp-sg13g2 cb7daaa8901016cf7c5d272dfa322c41f024931f
+make macro copy-macro sim-gl
+```
 
 ## Program example
 
