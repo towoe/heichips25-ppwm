@@ -17,19 +17,20 @@ module heichips25_ppwm (
 );
 
   // List all unused inputs to prevent warnings
-  wire  _unused = &{ena, ui_in[7:2], uio_in[7:0]};
+  wire  _unused = &{ena, ui_in[7:6], ui_in[3:0], uio_in[7:0]};
 
   ppwm #(
       .COUNTER_WIDTH(10)
   ) u_ppwm (
       .clk(clk),
       .rst_n(rst_n),
-      .data_i(ui_in[0]),
-      .mem_prog_clk_i(ui_in[1]),
-      .data_o(uo_out[0])
+      .data_i(ui_in[4]),
+      .mem_prog_clk_i(ui_in[5]),
+      .data_o(uo_out[4])
   );
 
-  assign uo_out[7:1] = 7'h00;
+  assign uo_out[7:5] = 3'h00;
+  assign uo_out[3:0] = 4'h00;
   assign uio_out = '0;
   assign uio_oe = '0;
 

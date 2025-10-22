@@ -97,22 +97,22 @@ async def pwm_test(dut):
 async def load_program_to_memory(dut, program):
     """Load a program into the memory module via serial interface."""
     # Send start bit (high)
-    dut.ui_in[0].value = 1
+    dut.ui_in[4].value = 1
     await program_clk(dut)
     for _, instruction in enumerate(program):
         # Send 7 bits of instruction data (LSB first)
         print(f"Loading instruction: {instruction:07b}")
         for bit in range(7):
-            dut.ui_in[0].value = (instruction >> bit) & 1
+            dut.ui_in[4].value = (instruction >> bit) & 1
             await program_clk(dut)
 
     # cocotb documentation: https://docs.cocotb.org/en/stable/refcard.html
 
 
 async def program_clk(dut):
-    dut.ui_in[1].value = 1
+    dut.ui_in[5].value = 1
     await ClockCycles(dut.clk, 5)
-    dut.ui_in[1].value = 0
+    dut.ui_in[5].value = 0
     await ClockCycles(dut.clk, 5)
 
 
