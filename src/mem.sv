@@ -21,7 +21,7 @@ module mem #(
   logic clk_prog_sync1, clk_prog_sync2, clk_prog_sync3;
   logic clk_prog_posedge;
 
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       clk_prog_sync1 <= 1'b0;
       clk_prog_sync2 <= 1'b0;
@@ -37,7 +37,7 @@ module mem #(
 
   // Synchronize data input
   logic data_sync1, data_sync2;
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       data_sync1 <= 1'b0;
       data_sync2 <= 1'b0;
